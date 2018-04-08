@@ -9,10 +9,10 @@ public class attributes {
     private String valor;
     private String expresionRegular;
     
-    public attributes(String n, String v, String e_r) {
-        this.nombre = n;
-        this.valor = v;
-        this.expresionRegular = e_r;
+    public attributes(String nombre, String valor, String expresionRegular) {
+        this.nombre = nombre;
+        this.valor = valor;
+        this.expresionRegular = expresionRegular;
     }
     
     public void setNombre(String nombre) {

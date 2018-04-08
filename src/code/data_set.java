@@ -13,6 +13,7 @@ public class data_set {
         this.nombre = "";
     }
     
+    ///% comentarios 
     public void setComentarios(String comentarios) {
         this.comentarios = comentarios;
     }
@@ -21,6 +22,7 @@ public class data_set {
         return comentarios;
     }
     
+    ///@relation
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
