@@ -500,7 +500,7 @@ public class Conjunto extends javax.swing.JFrame {
         tblDatos.setModel(dtm_datos);
     }
     
-    public void borrarAtributo() { ///ERROR QUE DEBO CORREGIR
+    public void borrarAtributo() {
         int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas eliminar el/los atributo(s)?", "Eliminar", JOptionPane.YES_NO_CANCEL_OPTION);
         if(opcion == JOptionPane.YES_OPTION) {
             int fila = tblAtributos.getSelectedRow();
