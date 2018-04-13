@@ -59,47 +59,70 @@ public class Conjunto extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnGuardar = new javax.swing.JButton();
-        btnGuardarComo = new javax.swing.JButton();
-        btnCargarArchivo = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblAtributos = new javax.swing.JTable();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        lblNombreConjunto = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        lblNumeroAtributos = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        lblNombreConjunto = new javax.swing.JLabel();
+        lblNumeroAtributos = new javax.swing.JLabel();
         lblNumeroInstancias = new javax.swing.JLabel();
+        btnSalir = new javax.swing.JButton();
+        btnGuardarComoArchivo = new javax.swing.JButton();
+        btnGuardarArchivo = new javax.swing.JButton();
+        btnCargarArchivo = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
+        tblAtributos = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblErrorAtributo = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
         tblInstancias = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
-        lblValoresFaltantes = new javax.swing.JLabel();
-        btnEliminarAtributo = new javax.swing.JButton();
-        btnEliminarInstancia = new javax.swing.JButton();
-        btnAgregarAtributo = new javax.swing.JButton();
-        btnAgregarInstancia = new javax.swing.JButton();
-        btnSalir = new javax.swing.JButton();
+        lblPorcentajeFaltantes = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        cbxFiltro = new javax.swing.JComboBox<>();
         btnBuscar = new javax.swing.JButton();
-        cbFiltro = new javax.swing.JComboBox<>();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tblErrorAtributo = new javax.swing.JTable();
+        btnAgregarAtributo = new javax.swing.JButton();
+        btnEliminarAtributos = new javax.swing.JButton();
+        btnAgregarInstancia = new javax.swing.JButton();
+        btnEliminarInstancias = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Conjunto de datos");
+        setTitle("Datos");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        btnGuardar.setText("Guardar");
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+        jLabel1.setText("Nombre:");
+
+        jLabel2.setText("Núm. atributos:");
+
+        jLabel3.setText("Núm. instancias:");
+
+        lblNombreConjunto.setText("...");
+
+        lblNumeroAtributos.setText("...");
+
+        lblNumeroInstancias.setText("...");
+
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
+                btnSalirActionPerformed(evt);
             }
         });
 
-        btnGuardarComo.setText("Guardar como...");
-        btnGuardarComo.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardarComoArchivo.setText("Guardar como...");
+        btnGuardarComoArchivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarComoActionPerformed(evt);
+                btnGuardarComoArchivoActionPerformed(evt);
+            }
+        });
+
+        btnGuardarArchivo.setText("Guardar");
+        btnGuardarArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarArchivoActionPerformed(evt);
             }
         });
 
@@ -110,72 +133,35 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
+        tblAtributos.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         tblAtributos.setModel(dtmAtributos);
+        tblAtributos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tblAtributos.setFocusable(false);
         tblAtributos.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(tblAtributos);
+        jScrollPane1.setViewportView(tblAtributos);
 
-        jLabel1.setText("Nombre Conjunto: ");
+        tblErrorAtributo = new javax.swing.JTable() {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblErrorAtributo.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        tblErrorAtributo.setModel(dtmErrores);
+        tblErrorAtributo.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblErrorAtributo.setFocusable(false);
+        tblErrorAtributo.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(tblErrorAtributo);
 
-        lblNombreConjunto.setText("...");
-
-        jLabel2.setText("Núm. Atributos:");
-
-        lblNumeroAtributos.setText("...");
-
-        jLabel3.setText("Núm. Instancias:");
-
-        lblNumeroInstancias.setText("...");
-
+        tblInstancias.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         tblInstancias.setModel(dtmInstancias);
         tblInstancias.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tblInstancias.setFocusable(false);
         tblInstancias.getTableHeader().setReorderingAllowed(false);
-        tblInstancias.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tblInstanciasKeyTyped(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblInstancias);
+        jScrollPane3.setViewportView(tblInstancias);
 
         jLabel4.setText("% de valores faltantes:");
 
-        lblValoresFaltantes.setText("...");
-
-        btnEliminarAtributo.setText("Eliminar atributo");
-        btnEliminarAtributo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarAtributoActionPerformed(evt);
-            }
-        });
-
-        btnEliminarInstancia.setText("Eliminar instancia");
-        btnEliminarInstancia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarInstanciaActionPerformed(evt);
-            }
-        });
-
-        btnAgregarAtributo.setText("Agregar atributo");
-        btnAgregarAtributo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarAtributoActionPerformed(evt);
-            }
-        });
-
-        btnAgregarInstancia.setText("Agregar instancia");
-        btnAgregarInstancia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarInstanciaActionPerformed(evt);
-            }
-        });
-
-        btnSalir.setText("Salir");
-        btnSalir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSalirActionPerformed(evt);
-            }
-        });
+        lblPorcentajeFaltantes.setText("...");
 
         jLabel5.setText("Buscar dato por:");
 
@@ -186,128 +172,181 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
-        tblErrorAtributo = new javax.swing.JTable() {
-            public boolean isCellEditable(int row, int col) {
-                return false;
+        btnAgregarAtributo.setText("Agregar atributo");
+        btnAgregarAtributo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarAtributoActionPerformed(evt);
             }
-        };
-        tblErrorAtributo.setModel(dtmErrores);
-        tblErrorAtributo.setFocusable(false);
-        tblErrorAtributo.getTableHeader().setReorderingAllowed(false);
-        jScrollPane3.setViewportView(tblErrorAtributo);
+        });
+
+        btnEliminarAtributos.setText("Eliminar atributos");
+        btnEliminarAtributos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarAtributosActionPerformed(evt);
+            }
+        });
+
+        btnAgregarInstancia.setText("Agregar instancia");
+        btnAgregarInstancia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarInstanciaActionPerformed(evt);
+            }
+        });
+
+        btnEliminarInstancias.setText("Eliminar instancias");
+        btnEliminarInstancias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarInstanciasActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblNombreConjunto))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblNumeroAtributos))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblNumeroInstancias))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(btnAgregarAtributo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnEliminarAtributos)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblPorcentajeFaltantes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 519, Short.MAX_VALUE)
+                        .addComponent(btnCargarArchivo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnGuardarArchivo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnGuardarComoArchivo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSalir))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(btnAgregarInstancia)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEliminarInstancias))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscar)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane3)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSalir)
+                        .addComponent(btnGuardarComoArchivo)
+                        .addComponent(btnGuardarArchivo)
+                        .addComponent(btnCargarArchivo))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(lblNombreConjunto)
+                            .addComponent(jLabel4)
+                            .addComponent(lblPorcentajeFaltantes))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(lblNumeroAtributos))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(lblNumeroInstancias)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnBuscar)
+                                .addComponent(jLabel5)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAgregarAtributo)
+                            .addComponent(btnEliminarAtributos))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgregarInstancia)
+                    .addComponent(btnEliminarInstancias))
+                .addGap(13, 13, 13))
+        );
+
+        jTabbedPane1.addTab("Conjunto de datos", jPanel2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1300, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 600, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Análisis Univariable", jPanel3);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1300, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 600, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Análisis Bivariable", jPanel4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEliminarAtributo)
-                        .addGap(5, 5, 5)
-                        .addComponent(btnAgregarAtributo))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNombreConjunto))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNumeroInstancias))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNumeroAtributos)))))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblValoresFaltantes))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnBuscar)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCargarArchivo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardarComo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSalir))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 958, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEliminarInstancia)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAgregarInstancia)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnGuardar)
-                        .addComponent(btnGuardarComo)
-                        .addComponent(btnSalir)
-                        .addComponent(btnCargarArchivo))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(lblNombreConjunto)
-                            .addComponent(jLabel4)
-                            .addComponent(lblValoresFaltantes))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(lblNumeroAtributos))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel3)
-                                    .addComponent(lblNumeroInstancias)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnEliminarAtributo)
-                            .addComponent(btnAgregarAtributo))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEliminarInstancia)
-                    .addComponent(btnAgregarInstancia))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+     
     public void cargarArchivo() {
         boolean cargarDatos = false;
         JFileChooser directorio = new JFileChooser();
@@ -504,13 +543,13 @@ public class Conjunto extends javax.swing.JFrame {
         lblNumeroAtributos.setText(Integer.toString(attributeList.size()));
         lblNumeroInstancias.setText(Integer.toString(instanceList.size()));
         
-        cbFiltro.removeAllItems();
+        cbxFiltro.removeAllItems();
         
         dtmInstancias = new DefaultTableModel();
         dtmInstancias.addColumn("#");
         for(int i = 0; i < attributeList.size(); i++) {
             dtmInstancias.addColumn(attributeList.get(i).getNombreAtributo());
-            cbFiltro.addItem(attributeList.get(i).getNombreAtributo());
+            cbxFiltro.addItem(attributeList.get(i).getNombreAtributo());
         }
         
         int valorFaltante = 0;
@@ -553,7 +592,7 @@ public class Conjunto extends javax.swing.JFrame {
             porcentajeFaltante = 100.0;    
         }
         Formatter formato = new Formatter();
-        lblValoresFaltantes.setText(formato.format("%.2f", porcentajeFaltante) + "%");
+        lblPorcentajeFaltantes.setText(formato.format("%.2f", porcentajeFaltante) + "%");
         tblInstancias.setModel(dtmInstancias);
         RowColor rowcolor = new RowColor();
         tblInstancias.setDefaultRenderer(Object.class, rowcolor);
@@ -640,7 +679,7 @@ public class Conjunto extends javax.swing.JFrame {
     }
     
     public void buscarDato() {
-        int index = cbFiltro.getSelectedIndex();
+        int index = cbxFiltro.getSelectedIndex();
         String filtro = JOptionPane.showInputDialog(null, "Ingresa el dato de [" + attributeList.get(index).getNombreAtributo()+ "] que desea buscar: ");
         if(index != -1) {
             if(filtro == null) {
@@ -734,81 +773,98 @@ public class Conjunto extends javax.swing.JFrame {
     }
     
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
-        cargarArchivo();        
+        cargarArchivo();
     }//GEN-LAST:event_btnCargarArchivoActionPerformed
 
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+    private void btnGuardarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarArchivoActionPerformed
+        // TODO add your handling code here:
         if(abierto == true) {
             guardarArchivo();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede guardar si no se ha cargado un DataSet." , "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error, no se puede guardar si no hay un Data Set cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnGuardarActionPerformed
+    }//GEN-LAST:event_btnGuardarArchivoActionPerformed
 
-    private void btnGuardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarComoActionPerformed
+    private void btnGuardarComoArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarComoArchivoActionPerformed
+        // TODO add your handling code here:
         if(abierto == true) {
             guardarComoArchivo();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede guardar un nuevo archivo si no se ha cargado un DataSet." , "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error, no se puede guardar si no hay un Data Set cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnGuardarComoActionPerformed
+    }//GEN-LAST:event_btnGuardarComoArchivoActionPerformed
 
-    private void btnEliminarAtributoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarAtributoActionPerformed
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        // TODO add your handling code here:
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas guardar los cambios antes de salir?", "Salir", JOptionPane.YES_NO_CANCEL_OPTION);
+        if(opcion == JOptionPane.YES_OPTION) {
+            if(abierto == true) {
+                guardarArchivo();
+                System.exit(0);
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Error, no hay un Data Set cargado, solo se puede salir.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if(opcion == JOptionPane.NO_OPTION) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnAgregarAtributoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarAtributoActionPerformed
+        // TODO add your handling code here:
+        if(abierto == true) {
+            agregarAtributo();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No se puede agregar un atributo si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAgregarAtributoActionPerformed
+
+    private void btnEliminarAtributosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarAtributosActionPerformed
+        // TODO add your handling code here:
         if(abierto == true) {
             borrarAtributos();
         }
         else {
             JOptionPane.showMessageDialog(this, "No se puede eliminar atributos si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnEliminarAtributoActionPerformed
+    }//GEN-LAST:event_btnEliminarAtributosActionPerformed
 
-    private void btnEliminarInstanciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInstanciaActionPerformed
+    private void btnAgregarInstanciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarInstanciaActionPerformed
+        // TODO add your handling code here:
+        if(abierto == true) {
+            agregarInstancia();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No se puede agregar una instancia si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAgregarInstanciaActionPerformed
+
+    private void btnEliminarInstanciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInstanciasActionPerformed
+        // TODO add your handling code here:
         if(abierto == true) {
             borrarInstancias();
         }
         else {
             JOptionPane.showMessageDialog(this, "No se puede eliminar instancias si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnEliminarInstanciaActionPerformed
-
-    private void btnAgregarAtributoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarAtributoActionPerformed
-        if(abierto == true) {
-            agregarAtributo();
-        }
-        else {
-            JOptionPane.showMessageDialog(this, "No se puede agregar atributos si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_btnAgregarAtributoActionPerformed
-
-    private void btnAgregarInstanciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarInstanciaActionPerformed
-        if(abierto == true) {
-            agregarInstancia();
-        }
-        else {
-            JOptionPane.showMessageDialog(this, "No se puede eliminar instancias si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_btnAgregarInstanciaActionPerformed
-
-    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        salirAplicacion();
-    }//GEN-LAST:event_btnSalirActionPerformed
-
-    private void tblInstanciasKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblInstanciasKeyTyped
-        
-    }//GEN-LAST:event_tblInstanciasKeyTyped
+    }//GEN-LAST:event_btnEliminarInstanciasActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        int conteo = cbFiltro.getItemCount(); 
-        if(conteo > 0) { //Si hay elementos para filtrar la busqueda
+        // TODO add your handling code here:
+        int conteo = cbxFiltro.getItemCount();
+        if(conteo > 0) {
             buscarDato();
         }
         else {
             JOptionPane.showMessageDialog(this, "No hay filtro de búsqueda.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
-
+       
+    
     /**
      * @param args the command line arguments
      */
@@ -845,24 +901,28 @@ public class Conjunto extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregarInstancia;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCargarArchivo;
-    private javax.swing.JButton btnEliminarAtributo;
-    private javax.swing.JButton btnEliminarInstancia;
-    private javax.swing.JButton btnGuardar;
-    private javax.swing.JButton btnGuardarComo;
+    private javax.swing.JButton btnEliminarAtributos;
+    private javax.swing.JButton btnEliminarInstancias;
+    private javax.swing.JButton btnGuardarArchivo;
+    private javax.swing.JButton btnGuardarComoArchivo;
     private javax.swing.JButton btnSalir;
-    private javax.swing.JComboBox<String> cbFiltro;
+    private javax.swing.JComboBox<String> cbxFiltro;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblNombreConjunto;
     private javax.swing.JLabel lblNumeroAtributos;
     private javax.swing.JLabel lblNumeroInstancias;
-    private javax.swing.JLabel lblValoresFaltantes;
+    private javax.swing.JLabel lblPorcentajeFaltantes;
     private javax.swing.JTable tblAtributos;
     private javax.swing.JTable tblErrorAtributo;
     private javax.swing.JTable tblInstancias;
