@@ -111,6 +111,8 @@ public class Conjunto extends javax.swing.JFrame {
         });
 
         tblAtributos.setModel(dtmAtributos);
+        tblAtributos.setFocusable(false);
+        tblAtributos.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tblAtributos);
 
         jLabel1.setText("Nombre Conjunto: ");
@@ -127,6 +129,8 @@ public class Conjunto extends javax.swing.JFrame {
 
         tblInstancias.setModel(dtmInstancias);
         tblInstancias.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblInstancias.setFocusable(false);
+        tblInstancias.getTableHeader().setReorderingAllowed(false);
         tblInstancias.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tblInstanciasKeyTyped(evt);
@@ -182,8 +186,14 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
-        tblErrorAtributo.setAutoCreateRowSorter(true);
+        tblErrorAtributo = new javax.swing.JTable() {
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
+        };
         tblErrorAtributo.setModel(dtmErrores);
+        tblErrorAtributo.setFocusable(false);
+        tblErrorAtributo.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tblErrorAtributo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -551,34 +561,6 @@ public class Conjunto extends javax.swing.JFrame {
         obtenerPorcentajeErrores();
     }
     
-    public void obtenerPorcentajeErrores() {
-        dtmErrores = new DefaultTableModel();
-        dtmErrores.addColumn("Atributo");
-        dtmErrores.addColumn("% de errores");
-        Object[] filaError = new Object[2];
-        int valorError = 0;
-        double porcentajeError = 0;
-        for(int i = 0; i < dataList.size(); i++) {
-            filaError[0] = attributeList.get(i).getNombreAtributo();
-            for(int j = 0; j < instanceList.size(); j++) {
-                if(Pattern.matches("[" + missingvalue.getValorFaltante() + "]", instanceList.get(j).get(i))) {
-                    valorError = 0;
-                }
-                else if(!Pattern.matches(attributeList.get(i).getExpresionRegular(), instanceList.get(j).get(i))) {
-                    valorError++;
-                }
-            }
-            porcentajeError = ((valorError * 100.0) / instanceList.size());
-            Formatter formato = new Formatter();
-            filaError[1] = formato.format("%.2f", porcentajeError);
-            dtmErrores.addRow(filaError);
-            if(valorError > 0) {
-                valorError = 0;
-            }
-        }
-        tblErrorAtributo.setModel(dtmErrores);
-    }
-    
     public void borrarAtributos() {
         int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas eliminar el/los atributo(s)?", "Eliminar", JOptionPane.YES_NO_CANCEL_OPTION);
         if(opcion == JOptionPane.YES_OPTION) {
@@ -717,6 +699,38 @@ public class Conjunto extends javax.swing.JFrame {
                 tblInstancias.setDefaultRenderer(Object.class, rowcolor);
             }
         }
+    }
+    
+    public void obtenerPorcentajeErrores() {
+        dtmErrores = new DefaultTableModel();
+        dtmErrores.addColumn("Atributo");
+        dtmErrores.addColumn("% de errores");
+        dtmErrores.addColumn("% de faltantes");
+        Object[] filaError = new Object[3];
+        int valorError = 0, valorFalta = 0;
+        double porcentajeError = 0.0, porcentajeFaltante = 0.0;
+        for(int i = 0; i < dataList.size(); i++) {
+            filaError[0] = attributeList.get(i).getNombreAtributo();
+            for(int j = 0; j < instanceList.size(); j++) {
+                if(Pattern.matches("[" + missingvalue.getValorFaltante() + "]", instanceList.get(j).get(i))) {
+                    valorFalta++;
+                }
+                else if(!Pattern.matches(attributeList.get(i).getExpresionRegular(), instanceList.get(j).get(i))) {
+                    valorError++;
+                }
+            }
+            porcentajeError = ((valorError * 100.0) / instanceList.size());
+            porcentajeFaltante = ((valorFalta * 100.0) / instanceList.size());
+            Formatter formato = new Formatter();
+            filaError[1] = String.format("%.2f",porcentajeError);
+            filaError[2] = String.format("%.2f", porcentajeFaltante);
+            dtmErrores.addRow(filaError);
+            if((valorError > 0) || (valorFalta > 0)) {
+                valorError = 0;
+                valorFalta = 0;
+            }
+        }
+        tblErrorAtributo.setModel(dtmErrores);
     }
     
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
