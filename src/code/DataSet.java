@@ -4,11 +4,11 @@ package code;
  *
  * @author ALEJO SALGADO
  */
-public class data_set {
+public class DataSet {
     private String comentarios;
     private String nombre;
     
-    public data_set() {
+    public DataSet() {
         this.comentarios = "";
         this.nombre = "";
     }

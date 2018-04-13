@@ -13,43 +13,42 @@ import javax.swing.table.DefaultTableModel;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import javax.swing.JOptionPane;
-import java.text.DecimalFormat;
 import java.io.File;
 import java.util.regex.Pattern;
-
-import code.attributes;
-import code.data;
-import code.data_set;
-import code.missing_values;
 import java.util.Arrays;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import java.util.Formatter;
+
+import code.DataSet;
+import code.Attribute;
+import code.MissingValue;
+import code.RowColor;
 
 /**
  *
  * @author ALEJO SALGADO
  */
 public class Conjunto extends javax.swing.JFrame {
-    data_set ds; ///donde cargamos el nombre del conjunto de datos
-    attributes att; ///donde cargamos los datos necesarios de los atributos
-    missing_values mv;
-    data dt;
+    DataSet dataset; //donde cargamos el nombre del conjunto de datos
+    Attribute attribute; //donde cargamos los datos necesarios de los atributos
+    MissingValue missingvalue; //donde cargamos el valor faltante del conjunto
     
-    ArrayList<attributes> atrib;
-    ArrayList<String> cadenas;
-    ArrayList<ArrayList<String>> datos;
+    ArrayList<Attribute> attributeList; //Lista de atributos
+    ArrayList<ArrayList<String>> instanceList; //Lista de instancias
+    ArrayList<String> dataList; //Arreglo para los datos
     
-    String ruta_original = "";
-    String aux = "", aux_esc = "";
+    boolean abierto; //usada para definir que se abrió el dataset
+    String rutaOriginal = ""; //usada para obtener la ruta de donde se abrió el archivo
+    String auxLectura = "", auxEscritura = "";
     String comentarios = "", nombre = "";
-    String[] atributos, registros;
-    String valoresFaltantes = "";
-    String cadena = ""; ///usada para concatenar cadenas
+    String[] atributos;
+    String[] instancias;
+    String valorFaltante = "";
     
-    boolean abierto;
-    
-    DefaultTableModel dtm_atributos = new DefaultTableModel();
-    DefaultTableModel dtm_datos = new DefaultTableModel();
+    DefaultTableModel dtmAtributos = new DefaultTableModel();
+    DefaultTableModel dtmInstancias = new DefaultTableModel();
+    DefaultTableModel dtmErrores = new DefaultTableModel();
     
     public Conjunto() {
         initComponents();
@@ -72,7 +71,7 @@ public class Conjunto extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         lblNumeroInstancias = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblDatos = new javax.swing.JTable();
+        tblInstancias = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         lblValoresFaltantes = new javax.swing.JLabel();
         btnEliminarAtributo = new javax.swing.JButton();
@@ -80,9 +79,15 @@ public class Conjunto extends javax.swing.JFrame {
         btnAgregarAtributo = new javax.swing.JButton();
         btnAgregarInstancia = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        btnBuscar = new javax.swing.JButton();
+        cbFiltro = new javax.swing.JComboBox<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblErrorAtributo = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Conjunto de datos");
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -105,7 +110,7 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
-        tblAtributos.setModel(dtm_atributos);
+        tblAtributos.setModel(dtmAtributos);
         jScrollPane2.setViewportView(tblAtributos);
 
         jLabel1.setText("Nombre Conjunto: ");
@@ -120,10 +125,16 @@ public class Conjunto extends javax.swing.JFrame {
 
         lblNumeroInstancias.setText("...");
 
-        tblDatos.setModel(dtm_datos);
-        jScrollPane1.setViewportView(tblDatos);
+        tblInstancias.setModel(dtmInstancias);
+        tblInstancias.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblInstancias.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tblInstanciasKeyTyped(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblInstancias);
 
-        jLabel4.setText("Valores faltantes:");
+        jLabel4.setText("% de valores faltantes:");
 
         lblValoresFaltantes.setText("...");
 
@@ -162,23 +173,39 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Buscar dato por:");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        tblErrorAtributo.setAutoCreateRowSorter(true);
+        tblErrorAtributo.setModel(dtmErrores);
+        jScrollPane3.setViewportView(tblErrorAtributo);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnCargarArchivo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardarComo))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnEliminarAtributo)
+                        .addGap(5, 5, 5)
+                        .addComponent(btnAgregarAtributo))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNombreConjunto))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -186,29 +213,35 @@ public class Conjunto extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNumeroAtributos))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNombreConjunto))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEliminarAtributo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAgregarAtributo)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNumeroAtributos)))))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1023, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblValoresFaltantes))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnEliminarInstancia)
+                                .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAgregarInstancia))
-                            .addComponent(btnSalir))
+                                .addComponent(cbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscar)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCargarArchivo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnGuardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnGuardarComo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSalir))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 958, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnEliminarInstancia)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAgregarInstancia)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -216,25 +249,34 @@ public class Conjunto extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCargarArchivo)
-                    .addComponent(btnGuardar)
-                    .addComponent(btnGuardarComo)
-                    .addComponent(btnSalir))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(lblNombreConjunto)
-                    .addComponent(jLabel4)
-                    .addComponent(lblValoresFaltantes))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(lblNumeroAtributos))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(lblNumeroInstancias))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnGuardar)
+                        .addComponent(btnGuardarComo)
+                        .addComponent(btnSalir)
+                        .addComponent(btnCargarArchivo))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(lblNombreConjunto)
+                            .addComponent(jLabel4)
+                            .addComponent(lblValoresFaltantes))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(lblNumeroAtributos))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(lblNumeroInstancias)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(cbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -242,66 +284,73 @@ public class Conjunto extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnEliminarAtributo)
-                            .addComponent(btnAgregarAtributo)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnAgregarAtributo))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEliminarInstancia)
                     .addComponent(btnAgregarInstancia))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
     public void cargarArchivo() {
-        boolean bandera = false;
-        int seleccionado;
+        boolean cargarDatos = false;
         JFileChooser directorio = new JFileChooser();
         directorio.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         FileNameExtensionFilter filtroArchivo = new FileNameExtensionFilter("*.arff", "arff");
         directorio.setFileFilter(filtroArchivo);
-        seleccionado = directorio.showOpenDialog(this);
+        int seleccionado = directorio.showOpenDialog(this);
         if(seleccionado == JFileChooser.APPROVE_OPTION) {
             abierto = true;
-            registros = null;
-            ds = new data_set();
-            mv = new missing_values();
-            atrib = new ArrayList<attributes>();
-            datos = new ArrayList<ArrayList<String>>();
+            comentarios = "";
+            instancias = null;
+            dataset = new DataSet();
+            attributeList = new ArrayList<Attribute>();
+            missingvalue = new MissingValue();
+            instanceList = new ArrayList<ArrayList<String>>();
             try {
-                ruta_original = directorio.getSelectedFile().getAbsolutePath();
-                FileReader archivo_aux = new FileReader(ruta_original);
-                BufferedReader lector = new BufferedReader(archivo_aux);
-                while((aux = lector.readLine()) != null) {
-                    if(bandera == true) {
-                        aux = aux.replace(" ", "");
-                        registros = aux.split(",");
-                        cadenas = new ArrayList<String>();
-                        for(int i = 0; i < registros.length; i++) {
-                            cadenas.add(registros[i]);
+                rutaOriginal = directorio.getSelectedFile().getAbsolutePath();
+                FileReader archivoAux = new FileReader(rutaOriginal);
+                BufferedReader lector = new BufferedReader(archivoAux);
+                while((auxLectura = lector.readLine()) != null) {
+                    if(cargarDatos == true) {
+                        auxLectura = auxLectura.replace(" ", "");
+                        instancias = auxLectura.split(",");
+                        dataList = new ArrayList<String>();
+                        for(int i = 0; i < instancias.length; i++) {
+                            dataList.add(instancias[i]);
                         }
-                        datos.add(cadenas);
+                        instanceList.add(dataList);
                     }
-                    else if(aux.startsWith("%")) {
-                        comentarios += aux + "\n";
-                        ds.setComentarios(comentarios);                        
+                    else if(auxLectura.startsWith("%")) {
+                        comentarios += auxLectura + "\n";
+                        dataset.setComentarios(comentarios);                        
                     }
-                    else if(aux.startsWith("@relation")) {
-                        nombre = aux.substring(10);
-                        ds.setNombre(nombre);
+                    else if(auxLectura.startsWith("@relation")) {
+                        nombre = auxLectura.substring(10);
+                        dataset.setNombre(nombre);
                     }
-                    else if(aux.startsWith("@attribute")) {
-                        atributos = aux.split(" ");
-                        att = new attributes(atributos[1], atributos[2], atributos[3]);
-                        atrib.add(att);
+                    else if(auxLectura.startsWith("@attribute")) {
+                        atributos = auxLectura.split(" ");
+                        if(atributos.length < 4) {
+                            attribute = new Attribute(atributos[1], atributos[2], "");
+                        }
+                        else {
+                            attribute = new Attribute(atributos[1], atributos[2], atributos[3]);
+                        }
+                        attributeList.add(attribute);
                     }
-                    else if(aux.startsWith("@missingValue")) {
-                        valoresFaltantes = aux.substring(14);
-                        mv.setValoresFaltantes(valoresFaltantes);
+                    else if(auxLectura.startsWith("@missingValue")) {
+                        valorFaltante = auxLectura.substring(13, 15);
+                        missingvalue.setValorFaltante(valorFaltante);
                     }
-                    else if(aux.startsWith("@data")) {
-                        bandera = true;
+                    else if(auxLectura.startsWith("@data")) {
+                        cargarDatos = true;
                     }
                 }
                 lector.close();
@@ -318,77 +367,76 @@ public class Conjunto extends javax.swing.JFrame {
     }
     
     public void guardarArchivo() {
-        File archivo = new File(ruta_original);
+        File archivo = new File(rutaOriginal);
         try {
-            FileWriter archivo_aux = new FileWriter(archivo);
-            BufferedWriter escritor = new BufferedWriter(archivo_aux);
-            if(ds.getComentarios() != "") {
-                escritor.write(ds.getComentarios() + "\n");                 
+            FileWriter archivoAux = new FileWriter(archivo);
+            BufferedWriter escritor = new BufferedWriter(archivoAux);
+            if(dataset.getComentarios() != "") {
+                escritor.write(dataset.getComentarios() + "\n");                 
             }
-            if(ds.getNombre() != "") {
-                escritor.append("@relation " + ds.getNombre() + "\n\n");
+            if(dataset.getNombre() != "") {
+                escritor.append("@relation " + dataset.getNombre() + "\n\n");
             }
-            if(atrib != null) {
-                for(int i = 0; i < atrib.size(); i++) {
-                    aux_esc = atrib.get(i).getNombre() + " " + atrib.get(i).getValor() + " " + atrib.get(i).getExpresionRegular();
-                    escritor.append("@attribute " + aux_esc + "\n");
+            if(attributeList != null) {
+                for(int i = 0; i < attributeList.size(); i++) {
+                    auxEscritura = attributeList.get(i).getNombreAtributo() + " " + attributeList.get(i).getTipoDato() + " " + attributeList.get(i).getExpresionRegular();
+                    escritor.append("@attribute " + auxEscritura + "\n");
                 }
-                aux_esc = "";
+                auxEscritura = "";
             }
-            if(mv.getValoresFaltantes() != "") {
-                escritor.append("@missingValues" + mv.getValoresFaltantes() + "\n\n");
+            if(missingvalue.getValorFaltante() != "") {
+                escritor.append("@missingValue " + missingvalue.getValorFaltante() + "\n\n");
             }
             escritor.append("@data\n");
-            if(datos != null) {
-                for(int j = 0; j < datos.size(); j++) {
-                    for(int k = 0; k < cadenas.size(); k++) {
-                        aux_esc += datos.get(j).get(k).concat(", ");
+            if(instanceList != null) {
+                for(int j = 0; j < instanceList.size(); j++) {
+                    for(int k = 0; k < attributeList.size(); k++) {
+                        auxEscritura += instanceList.get(j).get(k).concat(", ");
                     }
-                    aux_esc = aux_esc.substring(0, aux_esc.length() - 2);
-                    escritor.append(aux_esc + "\n");
-                    aux_esc = "";
+                    auxEscritura = auxEscritura.substring(0, auxEscritura.length() - 2);
+                    escritor.append(auxEscritura + "\n");
+                    auxEscritura = "";
                 }
             }
             escritor.close();
-            JOptionPane.showMessageDialog(this, "El archivo guardado con exito en la ruta \n-> " + ruta_original);
+            JOptionPane.showMessageDialog(this, "El archivo guardado exitosamente en la ruta\n" + rutaOriginal);
         } catch (IOException ex) {
             Logger.getLogger(Conjunto.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public void guardarComoArchivo() {
-        int seleccionado;
         JFileChooser directorio = new JFileChooser();
-        seleccionado = directorio.showOpenDialog(this);
+        int seleccionado = directorio.showOpenDialog(this);
         if(seleccionado == JFileChooser.APPROVE_OPTION) {
             try {
-                FileWriter archivo_aux = new FileWriter(directorio.getSelectedFile().getAbsolutePath());
-                BufferedWriter escritor = new BufferedWriter(archivo_aux);
-                if(ds.getComentarios() != "") {
-                    escritor.write(ds.getComentarios() + "\n");                 
+                FileWriter archivoAux = new FileWriter(directorio.getSelectedFile().getAbsolutePath());
+                BufferedWriter escritor = new BufferedWriter(archivoAux);
+                if(dataset.getComentarios() != "") {
+                    escritor.write(dataset.getComentarios() + "\n");                 
                 }
-                if(ds.getNombre() != "") {
-                    escritor.append("@relation " + ds.getNombre() + "\n\n");
+                if(dataset.getNombre() != "") {
+                    escritor.append("@relation " + dataset.getNombre() + "\n\n");
                 }
-                if(atrib != null) {
-                    for(int i = 0; i < atrib.size(); i++) {
-                        aux_esc = atrib.get(i).getNombre() + " " + atrib.get(i).getValor() + " " + atrib.get(i).getExpresionRegular();
-                        escritor.append("@attribute " + aux_esc + "\n");
+                if(attributeList != null) {
+                    for(int i = 0; i < attributeList.size(); i++) {
+                        auxEscritura = attributeList.get(i).getNombreAtributo() + " " + attributeList.get(i).getTipoDato() + " " + attributeList.get(i).getExpresionRegular();
+                        escritor.append("@attribute " + auxEscritura + "\n");
                     }
-                    aux_esc = "";
+                    auxEscritura = "";
                 }
-                if(mv.getValoresFaltantes() != "") {
-                    escritor.append("@missingValues" + mv.getValoresFaltantes() + "\n\n");
+                if(missingvalue.getValorFaltante() != "") {
+                    escritor.append("@missingValue " + missingvalue.getValorFaltante() + "\n\n");
                 }
                 escritor.append("@data\n");
-                if(datos != null) {
-                    for(int j = 0; j < datos.size(); j++) {
-                        for(int k = 0; k < cadenas.size(); k++) {
-                            aux_esc += datos.get(j).get(k).concat(", ");
+                if(instanceList != null) {
+                    for(int j = 0; j < instanceList.size(); j++) {
+                        for(int k = 0; k < attributeList.size(); k++) {
+                            auxEscritura += instanceList.get(j).get(k).concat(", ");
                         }
-                        aux_esc = aux_esc.substring(0, aux_esc.length() - 2);
-                        escritor.append(aux_esc + "\n");
-                        aux_esc = "";
+                        auxEscritura = auxEscritura.substring(0, auxEscritura.length() - 2);
+                        escritor.append(auxEscritura + "\n");
+                        auxEscritura = "";
                     }
                 }
                 escritor.close();
@@ -401,18 +449,19 @@ public class Conjunto extends javax.swing.JFrame {
     }
     
     public void mostrarAtributos() {
-        dtm_atributos = new DefaultTableModel();
-        dtm_atributos.addColumn("Nombre atributo");
-        dtm_atributos.addColumn("Tipo de dato");
-        dtm_atributos.addColumn("Expresión regular");
-        Object[] fila = new Object[3];
-        for(int i = 0; i < atrib.size(); i++) {
-            fila[0] = atrib.get(i).getNombre();
-            fila[1] = atrib.get(i).getValor();
-            fila[2] = atrib.get(i).getExpresionRegular();
-            dtm_atributos.addRow(fila);
+        dtmAtributos = new DefaultTableModel();
+        dtmAtributos.addColumn("Nombre atributo");
+        dtmAtributos.addColumn("Tipo de dato");
+        dtmAtributos.addColumn("Expresión regular");
+        
+        Object[] filaAtributo = new Object[3];
+        for(int i = 0; i < attributeList.size(); i++) {
+            filaAtributo[0] = attributeList.get(i).getNombreAtributo();
+            filaAtributo[1] = attributeList.get(i).getTipoDato();
+            filaAtributo[2] = attributeList.get(i).getExpresionRegular();
+            dtmAtributos.addRow(filaAtributo);
         }
-        dtm_atributos.addTableModelListener(new TableModelListener() {
+        dtmAtributos.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
                 if(e.getType() == TableModelEvent.UPDATE) {
@@ -420,87 +469,117 @@ public class Conjunto extends javax.swing.JFrame {
                     int fila = e.getFirstRow();
                     switch(columna) { 
                         case 0: ///Si es la columna del nombre del atributo
-                            String cadn = "Nuevo valor -> " + tblAtributos.getValueAt(fila, columna).toString();
-                            cadn += "\nValor anterior del nombre del atributo -> " + atrib.get(fila).getNombre();
-                            JOptionPane.showMessageDialog(null, cadn);
-                            atrib.get(fila).setNombre(tblAtributos.getValueAt(fila, columna).toString());
+                            attributeList.get(fila).setNombreAtributo(tblAtributos.getValueAt(fila, columna).toString());
                         break;
                         case 1: ///Si es la columna del tipo de dato o valor
-                            String cadv = "Nuevo valor -> " + tblAtributos.getValueAt(fila, columna).toString();
-                            cadv += "\nValor anterior el tipo de dato -> " + atrib.get(fila).getValor();
-                            JOptionPane.showMessageDialog(null, cadv);
-                            atrib.get(fila).setValor(tblAtributos.getValueAt(fila, columna).toString());
+                            attributeList.get(fila).setTipoDato(tblAtributos.getValueAt(fila, columna).toString());
                         break;
                         case 2: ///Si es la columna de la expresión regular
-                            String cade = "Nuevo valor -> " + tblAtributos.getValueAt(fila, columna).toString();
-                            cade += "\nValor anterior de la expresión regular -> " + atrib.get(fila).getExpresionRegular();
-                            JOptionPane.showMessageDialog(null, cade);
-                            atrib.get(fila).setExpresionRegular(tblAtributos.getValueAt(fila, columna).toString());
+                            attributeList.get(fila).setExpresionRegular(tblAtributos.getValueAt(fila, columna).toString());
                         break;
                     }
                     mostrarDatos();
                 }
             }
         });
-        tblAtributos.setModel(dtm_atributos);
+        tblAtributos.setModel(dtmAtributos);
+        RowColor rowcolor = new RowColor();
+        tblAtributos.setDefaultRenderer(Object.class, rowcolor);
     }
     
     public void mostrarDatos() {
         mostrarAtributos();
         
-        int cantidadValoresFaltantes = 0;
-        ///double cantidadPorcentaje = 0.0, porcentaje = 0.0; 
-        lblNombreConjunto.setText(ds.getNombre());
-        lblNumeroAtributos.setText(Integer.toString(atrib.size()));
-        lblNumeroInstancias.setText(Integer.toString(datos.size()));
+        lblNombreConjunto.setText(dataset.getNombre());
+        lblNumeroAtributos.setText(Integer.toString(attributeList.size()));
+        lblNumeroInstancias.setText(Integer.toString(instanceList.size()));
         
-        dtm_datos = new DefaultTableModel();
-        dtm_datos.addColumn("Instancia #");
-        for(int j = 0; j < atrib.size(); j++) {
-            dtm_datos.addColumn(atrib.get(j).getNombre());
+        cbFiltro.removeAllItems();
+        
+        dtmInstancias = new DefaultTableModel();
+        dtmInstancias.addColumn("#");
+        for(int i = 0; i < attributeList.size(); i++) {
+            dtmInstancias.addColumn(attributeList.get(i).getNombreAtributo());
+            cbFiltro.addItem(attributeList.get(i).getNombreAtributo());
         }
-        Object[] fila = new Object[cadenas.size() + 1];
-        for(int k = 0; k < datos.size(); k++) {
-            ///fila[0] = k + 1;
-            fila[0] = k;
-            for(int l = 0; l < cadenas.size(); l++) {
-                if(Pattern.matches(atrib.get(l).getExpresionRegular(), datos.get(k).get(l))) {
-                    fila[l + 1] = datos.get(k).get(l);
+        
+        int valorFaltante = 0;
+        double porcentajeFaltante = 0;
+        Object[] filaInstancia = new Object[dataList.size() + 1];
+        for(int j = 0; j < instanceList.size(); j++) {
+            filaInstancia[0] = j + 1;
+            for(int k = 0; k < dataList.size(); k++) {
+                if(Pattern.matches(attributeList.get(k).getExpresionRegular(), instanceList.get(j).get(k))) {
+                    filaInstancia[k + 1] = instanceList.get(j).get(k);
                 }
-                else if(Pattern.matches("[?]", datos.get(k).get(l))){ ///Si llegan a ser valores con el simbolo "?" se contabilizan
-                    fila[l + 1] = datos.get(k).get(l);
-                    cantidadValoresFaltantes++;
+                else if(Pattern.matches("[" + missingvalue.getValorFaltante() + "]", instanceList.get(j).get(k))){
+                    filaInstancia[k + 1] = instanceList.get(j).get(k);
+                    valorFaltante++;
                 }
-                else if(!Pattern.matches(atrib.get(l).getExpresionRegular(), datos.get(k).get(l))){
-                    fila[l + 1] = "error " + datos.get(k).get(l) + " no valido";
+                else {
+                    filaInstancia[k + 1] = "valor invalido";
                 }
             }
-            dtm_datos.addRow(fila);
+            dtmInstancias.addRow(filaInstancia);
         }
-        dtm_datos.addTableModelListener(new TableModelListener() {
+        dtmInstancias.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
                 if(e.getType() == TableModelEvent.UPDATE) {
                     int columna = e.getColumn();
                     int fila = e.getFirstRow();
-                    if(columna != -1 && fila != -1) {
+                    if((columna != -1) && (fila != -1)) {
                         if(columna > 0) {
-                            String cad = "Nuevo valor -> " + tblDatos.getValueAt(fila, columna).toString();
-                            cad += "\nAnterior valor -> " + datos.get(fila).get(columna - 1);
-                            JOptionPane.showMessageDialog(null, cad);
-                            datos.get(fila).set((columna - 1), tblDatos.getValueAt(fila, columna).toString());
+                            instanceList.get(fila).set((columna - 1), tblInstancias.getValueAt(fila, columna).toString());
+                            mostrarDatos();
                         }
                     }
                 }
             }
         });
-        ///porcentaje = ((cantidadValoresFaltantes * 100) / (datos.size() * cadenas.size()));
-        ///DecimalFormat formato = new DecimalFormat("#.00");
-        lblValoresFaltantes.setText(Integer.toString(cantidadValoresFaltantes));
-        tblDatos.setModel(dtm_datos);
+        
+        porcentajeFaltante = ((valorFaltante * 100.0) / instanceList.size());
+        if(porcentajeFaltante > 100.0) {
+            porcentajeFaltante = 100.0;    
+        }
+        Formatter formato = new Formatter();
+        lblValoresFaltantes.setText(formato.format("%.2f", porcentajeFaltante) + "%");
+        tblInstancias.setModel(dtmInstancias);
+        RowColor rowcolor = new RowColor();
+        tblInstancias.setDefaultRenderer(Object.class, rowcolor);
+        
+        obtenerPorcentajeErrores();
     }
     
-    public void borrarAtributo() {
+    public void obtenerPorcentajeErrores() {
+        dtmErrores = new DefaultTableModel();
+        dtmErrores.addColumn("Atributo");
+        dtmErrores.addColumn("% de errores");
+        Object[] filaError = new Object[2];
+        int valorError = 0;
+        double porcentajeError = 0;
+        for(int i = 0; i < dataList.size(); i++) {
+            filaError[0] = attributeList.get(i).getNombreAtributo();
+            for(int j = 0; j < instanceList.size(); j++) {
+                if(Pattern.matches("[" + missingvalue.getValorFaltante() + "]", instanceList.get(j).get(i))) {
+                    valorError = 0;
+                }
+                else if(!Pattern.matches(attributeList.get(i).getExpresionRegular(), instanceList.get(j).get(i))) {
+                    valorError++;
+                }
+            }
+            porcentajeError = ((valorError * 100.0) / instanceList.size());
+            Formatter formato = new Formatter();
+            filaError[1] = formato.format("%.2f", porcentajeError);
+            dtmErrores.addRow(filaError);
+            if(valorError > 0) {
+                valorError = 0;
+            }
+        }
+        tblErrorAtributo.setModel(dtmErrores);
+    }
+    
+    public void borrarAtributos() {
         int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas eliminar el/los atributo(s)?", "Eliminar", JOptionPane.YES_NO_CANCEL_OPTION);
         if(opcion == JOptionPane.YES_OPTION) {
             int fila = tblAtributos.getSelectedRow();
@@ -508,65 +587,57 @@ public class Conjunto extends javax.swing.JFrame {
                 int[] filas = tblAtributos.getSelectedRows();
                 Arrays.sort(filas);
                 for(int i = filas.length - 1; i >= 0; i--) {
-                    dtm_atributos.removeRow(filas[i]);
-                    atrib.remove(filas[i]);
-                    for(int j = 0; j < datos.size(); j++) {
-                        datos.get(j).remove(filas[i]);                        
+                    attributeList.remove(filas[i]);
+                    for(int j = 0; j < instanceList.size(); j++) {
+                        instanceList.get(j).remove(filas[i]);                        
                     }
                 }
-                JOptionPane.showMessageDialog(this, "Atributo(s) eliminado(s)");
+                JOptionPane.showMessageDialog(this, "Atributo(s) eliminado(s).");
             }
             else {
-                JOptionPane.showMessageDialog(this, "No selecciono ninguna fila", "Aviso", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No seleccionó ninguna fila.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
             }   
             mostrarDatos();
         }
     }   
     
     public void agregarAtributo() {
-        String nombre_atributo = "example", tipo_dato = "numeric", expresion_regular = "[0-9]+", valor = "1600";
-        String[] fila = new String[3];        
-        fila[0] = nombre_atributo;
-        fila[1] = tipo_dato;
-        fila[2] = expresion_regular;
-        att = new attributes(fila[0], fila[1], fila[2]);
-        atrib.add(att);
-        for(int i = 0; i < datos.size(); i++) {
-            datos.get(i).add(valor);
+        String nombreAtributo = "ex-number", tipoDato = "numeric", expresionRegular = "[0-9]+", valor = "?";
+        attribute = new Attribute(nombreAtributo, tipoDato, expresionRegular);
+        attributeList.add(attribute);
+        for(int i = 0; i < instanceList.size(); i++) {
+            instanceList.get(i).add(valor);
         }        
         mostrarDatos();
     }
     
-    public void borrarInstancia() { 
+    public void borrarInstancias() { 
         int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas eliminar la(s) instancia(s)?", "Eliminar", JOptionPane.YES_NO_CANCEL_OPTION);
         if(opcion == JOptionPane.YES_OPTION) {
-            int fila = tblDatos.getSelectedRow();
+            int fila = tblInstancias.getSelectedRow();
             if(fila >= 0) {
-                int[] filas = tblDatos.getSelectedRows();
+                int[] filas = tblInstancias.getSelectedRows();
                 Arrays.sort(filas);
                 for(int i = filas.length - 1; i >= 0; i--) {
-                    dtm_datos.removeRow(filas[i]);
-                    datos.remove(filas[i]);
+                    instanceList.remove(filas[i]);
                 }
                 JOptionPane.showMessageDialog(this, "Instancia(s) eliminada(s).");
             }
             else {
-                JOptionPane.showMessageDialog(this, "No Selecciono Ninguna Fila", "Aviso", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No seleccionó ninguna fila.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
             }
-            
             mostrarDatos();
         }
     }
     
     public void agregarInstancia() {
-        String[] fila = new String[cadenas.size()];
-        cadenas = new ArrayList<String>();
+        String[] fila = new String[dataList.size()];
+        dataList = new ArrayList<String>();
         for(int i = 0; i < fila.length; i++) {
-            fila[i] = atrib.get(i).getNombre();
-            cadenas.add(fila[i]);
-            ///JOptionPane.showMessageDialog(this, "El tamaño de la fila es -> " + (fila.length - 1) + "\nInserte en " + i + " --> " + fila[i] + "\nTamaño de cadenas -> " + (cadenas.size() - 1));
+            fila[i] = "?";
+            dataList.add(fila[i]);
         }
-        datos.add(cadenas);
+        instanceList.add(dataList);
         mostrarDatos();
     }
     
@@ -578,7 +649,7 @@ public class Conjunto extends javax.swing.JFrame {
                 System.exit(0);
             }
             else {
-                JOptionPane.showMessageDialog(this, "No se puede guardar archivo que no este cargado, unicamente salir.");
+                JOptionPane.showMessageDialog(this, "No se puede guardar archivo que no este cargado, solo se puede salir.");
             }
         }
         else if(opcion == JOptionPane.NO_OPTION) {
@@ -587,7 +658,65 @@ public class Conjunto extends javax.swing.JFrame {
     }
     
     public void buscarDato() {
-        ////ESTO NADA MÁS Y TERMINO, MAÑANA LO DETALLO Y HAGO PRUEBAS DE DEPURACIÓN....
+        int index = cbFiltro.getSelectedIndex();
+        String filtro = JOptionPane.showInputDialog(null, "Ingresa el dato de [" + attributeList.get(index).getNombreAtributo()+ "] que desea buscar: ");
+        if(index != -1) {
+            if(filtro == null) {
+                mostrarDatos();
+            }
+            else if(filtro.length() == 0) {
+                mostrarDatos();
+            }
+            else {
+                dtmInstancias = new DefaultTableModel();
+                dtmInstancias.addColumn("#");
+                for(int i = 0; i < attributeList.size(); i++) {
+                    dtmInstancias.addColumn(attributeList.get(i).getNombreAtributo());
+                }
+                
+                Object[] filaInstancia = new Object[dataList.size() + 1];
+                for(int j = 0; j < instanceList.size(); j++) {
+                    String minusculas = instanceList.get(j).get(index).toLowerCase(), mayusculas = instanceList.get(j).get(index).toUpperCase(), cadenaOriginal = instanceList.get(j).get(index);
+                    if((minusculas.equals(filtro)) || (mayusculas.equals(filtro)) || (cadenaOriginal.equals(filtro))) {
+                        filaInstancia[0] = j + 1;
+                        for(int k = 0; k < dataList.size(); k++) {
+                            if(Pattern.matches(attributeList.get(k).getExpresionRegular(), instanceList.get(j).get(k))) {
+                                filaInstancia[k + 1] = instanceList.get(j).get(k);
+                            }
+                            else if(Pattern.matches("[" + missingvalue.getValorFaltante() + "]", instanceList.get(j).get(k))){
+                                filaInstancia[k + 1] = instanceList.get(j).get(k);
+                            }
+                            else if(!Pattern.matches(attributeList.get(k).getExpresionRegular(), instanceList.get(j).get(k))){
+                                filaInstancia[k + 1] = "valor invalido";
+                            }
+                        }
+                        dtmInstancias.addRow(filaInstancia);
+                    }
+                }
+                dtmInstancias.addTableModelListener(new TableModelListener() {
+                    @Override
+                    public void tableChanged(TableModelEvent e) {
+                        if(e.getType() == TableModelEvent.UPDATE) {
+                            int columna = e.getColumn();
+                            int fila = e.getFirstRow();
+                            if((fila != -1) && (columna != -1)) {
+                                if(columna > 0) {
+                                    int opcion = JOptionPane.showConfirmDialog(null, "¿Deseas reemplazar el dato?", "¡Aviso!", JOptionPane.WARNING_MESSAGE);
+                                    int fila_n = Integer.parseInt(tblInstancias.getValueAt(fila, 0).toString()) - 1; ///obtengo el nuevo indice filtrado de la busqueda
+                                    if(opcion == JOptionPane.YES_OPTION) {
+                                        instanceList.get(fila_n).set((columna - 1), tblInstancias.getValueAt(fila, columna).toString());
+                                        mostrarDatos();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                tblInstancias.setModel(dtmInstancias);
+                RowColor rowcolor = new RowColor();
+                tblInstancias.setDefaultRenderer(Object.class, rowcolor);
+            }
+        }
     }
     
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
@@ -599,7 +728,7 @@ public class Conjunto extends javax.swing.JFrame {
             guardarArchivo();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede guardar si no se ha cargado un DataSet.");
+            JOptionPane.showMessageDialog(this, "No se puede guardar si no se ha cargado un DataSet." , "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -608,16 +737,26 @@ public class Conjunto extends javax.swing.JFrame {
             guardarComoArchivo();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede guardar si no se ha cargado un DataSet.");
+            JOptionPane.showMessageDialog(this, "No se puede guardar un nuevo archivo si no se ha cargado un DataSet." , "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnGuardarComoActionPerformed
 
     private void btnEliminarAtributoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarAtributoActionPerformed
-        borrarAtributo();
+        if(abierto == true) {
+            borrarAtributos();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No se puede eliminar atributos si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnEliminarAtributoActionPerformed
 
     private void btnEliminarInstanciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInstanciaActionPerformed
-        borrarInstancia();
+        if(abierto == true) {
+            borrarInstancias();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No se puede eliminar instancias si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnEliminarInstanciaActionPerformed
 
     private void btnAgregarAtributoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarAtributoActionPerformed
@@ -625,7 +764,7 @@ public class Conjunto extends javax.swing.JFrame {
             agregarAtributo();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede agregar atributos si no hay un DataSet cargado.");
+            JOptionPane.showMessageDialog(this, "No se puede agregar atributos si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAgregarAtributoActionPerformed
 
@@ -634,13 +773,27 @@ public class Conjunto extends javax.swing.JFrame {
             agregarInstancia();
         }
         else {
-            JOptionPane.showMessageDialog(this, "No se puede agregar instancias si no hay un DataSet cargado.");
+            JOptionPane.showMessageDialog(this, "No se puede eliminar instancias si no hay un DataSet cargado.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAgregarInstanciaActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         salirAplicacion();
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void tblInstanciasKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblInstanciasKeyTyped
+        
+    }//GEN-LAST:event_tblInstanciasKeyTyped
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        int conteo = cbFiltro.getItemCount(); 
+        if(conteo > 0) { //Si hay elementos para filtrar la busqueda
+            buscarDato();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No hay filtro de búsqueda.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -676,23 +829,28 @@ public class Conjunto extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarAtributo;
     private javax.swing.JButton btnAgregarInstancia;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCargarArchivo;
     private javax.swing.JButton btnEliminarAtributo;
     private javax.swing.JButton btnEliminarInstancia;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnGuardarComo;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JComboBox<String> cbFiltro;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblNombreConjunto;
     private javax.swing.JLabel lblNumeroAtributos;
     private javax.swing.JLabel lblNumeroInstancias;
     private javax.swing.JLabel lblValoresFaltantes;
     private javax.swing.JTable tblAtributos;
-    private javax.swing.JTable tblDatos;
+    private javax.swing.JTable tblErrorAtributo;
+    private javax.swing.JTable tblInstancias;
     // End of variables declaration//GEN-END:variables
 }
