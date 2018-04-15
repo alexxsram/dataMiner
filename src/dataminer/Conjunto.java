@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import java.util.Arrays;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.util.Formatter;
 
 import org.jfree.chart.ChartFrame;
 
@@ -27,8 +26,6 @@ import code.Attribute;
 import code.MissingValue;
 import code.RowColor;
 import code.UtileriaExtra;
-import javax.swing.table.TableColumnModel;
-
 
 /**
  *
@@ -46,7 +43,8 @@ public class Conjunto extends javax.swing.JFrame {
     
     ArrayList<ArrayList<String>> newInstanceList; //nueva lista de instancias para graficar
     ArrayList<String> nominalList; //
-    ArrayList<Integer> numericList; //
+    ArrayList<Integer> intList;
+    ArrayList<Double> numericList; //
     
     boolean abierto; //usada para definir que se abrió el dataset
     String rutaOriginal = ""; //usada para obtener la ruta de donde se abrió el archivo
@@ -60,7 +58,8 @@ public class Conjunto extends javax.swing.JFrame {
     DefaultTableModel dtmInstancias = new DefaultTableModel();
     DefaultTableModel dtmErrores = new DefaultTableModel();
     
-    DefaultTableModel dtmNumericos = new DefaultTableModel();
+    DefaultTableModel dtmUnivariable = new DefaultTableModel();
+    DefaultTableModel dtmBivariable = new DefaultTableModel();
     
     public Conjunto() {
         initComponents();
@@ -103,13 +102,15 @@ public class Conjunto extends javax.swing.JFrame {
         cbxAtributoUniv = new javax.swing.JComboBox<>();
         btnAnalisisUnivariable = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        tblNumericos = new javax.swing.JTable();
+        tblUnivariable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         cbxAtributoBiv1 = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         cbxAtributoBiv2 = new javax.swing.JComboBox<>();
         btnAnalisisBivariable = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tblBivariable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Datos");
@@ -337,16 +338,16 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
-        tblNumericos = new javax.swing.JTable() {
+        tblUnivariable = new javax.swing.JTable() {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tblNumericos.setFont(new java.awt.Font("Candara", 0, 13)); // NOI18N
-        tblNumericos.setModel(dtmNumericos);
-        tblNumericos.setFocusable(false);
-        tblNumericos.getTableHeader().setReorderingAllowed(false);
-        jScrollPane4.setViewportView(tblNumericos);
+        tblUnivariable.setFont(new java.awt.Font("Candara", 0, 13)); // NOI18N
+        tblUnivariable.setModel(dtmUnivariable);
+        tblUnivariable.setFocusable(false);
+        tblUnivariable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane4.setViewportView(tblUnivariable);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -354,15 +355,15 @@ public class Conjunto extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cbxAtributoUniv, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnAnalisisUnivariable)))
-                .addContainerGap(838, Short.MAX_VALUE))
+                .addContainerGap(871, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -373,9 +374,9 @@ public class Conjunto extends javax.swing.JFrame {
                         .addComponent(cbxAtributoUniv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnAnalisisUnivariable))
                     .addComponent(jLabel6))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(438, Short.MAX_VALUE))
+                .addContainerGap(450, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Análisis Univariable", jPanel3);
@@ -391,21 +392,35 @@ public class Conjunto extends javax.swing.JFrame {
             }
         });
 
+        tblBivariable = new javax.swing.JTable() {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblBivariable.setFont(new java.awt.Font("Candara", 0, 13)); // NOI18N
+        tblBivariable.setModel(dtmBivariable);
+        tblBivariable.setFocusable(false);
+        tblBivariable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane5.setViewportView(tblBivariable);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbxAtributoBiv1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbxAtributoBiv2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAnalisisBivariable)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane5)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbxAtributoBiv1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbxAtributoBiv2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAnalisisBivariable)))
                 .addContainerGap(642, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -419,7 +434,9 @@ public class Conjunto extends javax.swing.JFrame {
                     .addComponent(cbxAtributoBiv1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8))
-                .addContainerGap(566, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(420, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Análisis Bivariable", jPanel4);
@@ -887,27 +904,27 @@ public class Conjunto extends javax.swing.JFrame {
         if(attributeList.get(indice).getTipoDato().equals("numeric")) {
             numericList = utileria.getListaNumerica(instanceList, attributeList, indice);
             
-            int[] vector = utileria.llenarArreglo(numericList);
+            double[] vector = utileria.llenarArreglo(numericList);
             
-            dtmNumericos = new DefaultTableModel();
-            dtmNumericos.addColumn("Concepto");
-            dtmNumericos.addColumn("Resultado");
+            dtmUnivariable = new DefaultTableModel();
+            dtmUnivariable.addColumn("Concepto");
+            dtmUnivariable.addColumn("Resultado");
             
             Object[] fila = new Object[2];
             fila[0] = "Media"; 
             fila[1] = utileria.redondeoDecimales(utileria.calcularMedia(vector), 2);
-            dtmNumericos.addRow(fila);
+            dtmUnivariable.addRow(fila);
             fila[0] = "Mediana"; 
             fila[1] = utileria.redondeoDecimales(utileria.calcularMediana(vector), 2);
-            dtmNumericos.addRow(fila);
+            dtmUnivariable.addRow(fila);
             fila[0] = "Moda"; 
             fila[1] = utileria.calcularModa(vector);
-            dtmNumericos.addRow(fila);
+            dtmUnivariable.addRow(fila);
             fila[0] = "Desviación estándar"; 
-            fila[1] = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vector), 2);
-            dtmNumericos.addRow(fila);
+            fila[1] = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vector), 3);
+            dtmUnivariable.addRow(fila);
             
-            tblNumericos.setModel(dtmNumericos);
+            tblUnivariable.setModel(dtmUnivariable);
             
             ChartFrame frame = utileria.crearBoxPlot("Análisis numérico", attributeList.get(indice).getNombreAtributo(), numericList);
             frame.pack();
@@ -915,7 +932,7 @@ public class Conjunto extends javax.swing.JFrame {
             frame.setLocationRelativeTo(this);
         }
         else {
-            utileria.limpiarTabla(tblNumericos);
+            utileria.limpiarTabla(tblUnivariable);
             
             nominalList = utileria.getListaNominal(instanceList, attributeList, indice);
             
@@ -932,7 +949,50 @@ public class Conjunto extends javax.swing.JFrame {
         int indice1 = cbxAtributoBiv1.getSelectedIndex();
         int indice2 = cbxAtributoBiv2.getSelectedIndex();
         if(attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("numeric")) {
-            JOptionPane.showMessageDialog(this, "Pearson. i1: " + indice1 + " i2: " + indice2);
+            
+            ArrayList<Double> listaA = utileria.getListaNumerica(instanceList, attributeList, indice1);
+            double[] vectorA = utileria.llenarArreglo(listaA);
+            double mediaA = utileria.redondeoDecimales(utileria.calcularMedia(vectorA), 2);
+            double desvestA = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorA), 3);
+            
+            ArrayList<Double> listaB = utileria.getListaNumerica(instanceList, attributeList, indice2);
+            double[] vectorB = utileria.llenarArreglo(listaB);
+            double mediaB = utileria.redondeoDecimales(utileria.calcularMedia(vectorB), 2);
+            double desvestB = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorB), 3);
+            
+            double coeficientePearson = utileria.redondeoDecimales(utileria.calcularCoeficientePearson(listaA, listaB), 2);
+            
+            Object[] fila = new Object[2];
+            dtmBivariable = new DefaultTableModel();
+            dtmBivariable.addColumn("Concepto");
+            dtmBivariable.addColumn("Resultado");
+            
+            fila[0] = "Media de A";
+            fila[1] = mediaA;
+            dtmBivariable.addRow(fila);
+            
+            fila[0] = "Media de B";
+            fila[1] = mediaB;
+            dtmBivariable.addRow(fila);
+            
+            fila[0] = "Desviación estándar de A";
+            fila[1] = desvestA;
+            dtmBivariable.addRow(fila);
+            
+            fila[0] = "Desviación estándar de B";
+            fila[1] = desvestB;
+            dtmBivariable.addRow(fila);
+            
+            fila[0] = "Coeficiente de Pearson";
+            fila[1] = coeficientePearson;
+            dtmBivariable.addRow(fila);
+            
+            tblBivariable.setModel(dtmBivariable);
+            
+            ChartFrame frame = utileria.getGraficaDispersion(attributeList.get(indice1).getNombreAtributo(), attributeList.get(indice2).getNombreAtributo(), listaA, listaB);
+            frame.pack();
+            frame.setVisible(true);
+            frame.setLocationRelativeTo(this);
         }
         else if((attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("nominal")) || (attributeList.get(indice1).getTipoDato().equals("nominal") && attributeList.get(indice2).getTipoDato().equals("numeric"))) {
             JOptionPane.showMessageDialog(this, "No se puede por ser numerico y nominal. i1: " + indice1 + " i2: " + indice2);
@@ -1123,14 +1183,16 @@ public class Conjunto extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblNombreConjunto;
     private javax.swing.JLabel lblNumeroAtributos;
     private javax.swing.JLabel lblNumeroInstancias;
     private javax.swing.JLabel lblPorcentajeFaltantes;
     private javax.swing.JTable tblAtributos;
+    private javax.swing.JTable tblBivariable;
     private javax.swing.JTable tblErrorAtributo;
     private javax.swing.JTable tblInstancias;
-    private javax.swing.JTable tblNumericos;
+    private javax.swing.JTable tblUnivariable;
     // End of variables declaration//GEN-END:variables
 }

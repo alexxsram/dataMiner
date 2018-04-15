@@ -27,6 +27,9 @@ import org.jfree.data.statistics.BoxAndWhiskerXYDataset;
 import org.jfree.data.statistics.DefaultBoxAndWhiskerXYDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  *
@@ -35,6 +38,7 @@ import org.jfree.data.time.RegularTimePeriod;
 public class UtileriaExtra {
     ///FAVOR DE NO MOVER NADA, ESTO HACE FUNCIONAL LA PARTE DEL ANÁLISIS UNIVARIABLE Y BIVARIABLE
     public UtileriaExtra() {
+        ///Void constructor
     }
     
     //funciones extras que me servirán de algo :v
@@ -66,28 +70,49 @@ public class UtileriaExtra {
         return nominalList;
     }
     
-    public ArrayList<Integer> getListaNumerica(ArrayList<ArrayList<String>> instanceList, ArrayList<Attribute> attributeList, int indice) {
-       ArrayList<Integer> numericList = new ArrayList<Integer>();
+    public ArrayList<Double> getListaNumerica(ArrayList<ArrayList<String>> instanceList, ArrayList<Attribute> attributeList, int indice) {
+       ArrayList<Double> numericList = new ArrayList<Double>();
         for(int i = 0; i < instanceList.size(); i++) {
             if(Pattern.matches(attributeList.get(indice).getExpresionRegular(), instanceList.get(i).get(indice))) {
-                numericList.add(Integer.parseInt(instanceList.get(i).get(indice)));
+                numericList.add(Double.parseDouble(instanceList.get(i).get(indice)));
             }
         }
-        Collections.sort(numericList);
         return numericList;
     }
 
     ///para el analisis univariable de númericos
-    public int[] llenarArreglo(ArrayList<Integer> listaNumericos) {
-        Collections.sort(listaNumericos);
-        int[] vectorNumericos = new int[listaNumericos.size()];
+    public double[] llenarArreglo(ArrayList<Double> listaNumericos) {
+        double[] vectorNumericos = new double[listaNumericos.size()];
         for(int i = 0; i < vectorNumericos.length; i++) {
             vectorNumericos[i] = listaNumericos.get(i);
         }
         return vectorNumericos;
     }
     
-    public double calcularMedia(int[] vectorNumericos) {
+    public double[] metodoBurbuja(double[] vectorNumericos, int ordenacion) {
+        double aux = 0, cantidadVector = vectorNumericos.length;
+        for(int i = 0; i < cantidadVector - 1; i++) {
+            for(int j = i + 1; j < cantidadVector; j++) {
+                if(ordenacion == 0) {
+                    if(vectorNumericos[i] > vectorNumericos[j]) {
+                        aux = vectorNumericos[j];
+                        vectorNumericos[j] = vectorNumericos[i];
+                        vectorNumericos[i] = aux;
+                    }
+                }
+                else if(ordenacion == 1) {
+                    if(vectorNumericos[i] < vectorNumericos[j]) {
+                        aux = vectorNumericos[i];
+                        vectorNumericos[i] = vectorNumericos[j];
+                        vectorNumericos[j] = aux;
+                    }
+                }
+            }
+        }
+        return vectorNumericos;
+    }
+    
+    public double calcularMedia(double[] vectorNumericos) {
         double sumatoria = 0, media = 0;
         for(int i = 0; i < vectorNumericos.length; i++) {
             sumatoria += vectorNumericos[i];
@@ -96,26 +121,31 @@ public class UtileriaExtra {
         return media;
     }
     
-    public double calcularMediana(int[] vectorNumericos) {
+    public double calcularMediana(double[] vectorNumericos) {
         int posicion = 0, cantidadVector = vectorNumericos.length;
         double aux1 = 0, mediana = 0;
+        
+        vectorNumericos = metodoBurbuja(vectorNumericos, 0); //ordeno de menor a mayor
+        
         aux1 = cantidadVector / 2;
         if(cantidadVector%2 == 0) {
             posicion = (int)aux1;
             mediana = (double)((vectorNumericos[posicion - 1] + vectorNumericos[posicion])/ 2.0);
-            ///System.out.println("Posicion -> " + posicion + " valor de media -> " + mediana + " el resultado es " + vectorNumericos[posicion - 1] + " y " + vectorNumericos[posicion]);
         }
         if(cantidadVector%2 == 1) {
             posicion = (int)(aux1 + 0.5);
             mediana = (double)(vectorNumericos[posicion]);
-            ///System.out.println("Posicion -> " + posicion + " valor de media -> " + mediana + " el resultado es " + vectorNumericos[posicion]);
         }
         return mediana;
     }
     
-    public int calcularModa(int[] vectorNumericos) {
-        int moda = 0, cantidadVector = vectorNumericos.length;
+    public double calcularModa(double[] vectorNumericos) {
+        double moda = 0;
+        int cantidadVector = vectorNumericos.length;
         int frecuencia, frecuenciaModa = 0;
+        
+        vectorNumericos = metodoBurbuja(vectorNumericos, 0); //ordeno de menor a mayor
+        
         for(int i = 0; i < cantidadVector; i++) {
             frecuencia = 1;
             for(int j = i + 1; j < cantidadVector; j++) {
@@ -131,18 +161,20 @@ public class UtileriaExtra {
         return moda;
     }
     
-    public double calcularDesviacionEstandar(int[] vectorNumericos) {
+    public double calcularDesviacionEstandar(double[] vectorNumericos) {
         double media, sumatoria = 0, cantidadVector = vectorNumericos.length, desviacionEstandar = 0;
+        
         media = calcularMedia(vectorNumericos);
+        
         for(int i = 0; i < cantidadVector; i++) {
-            sumatoria += Math.pow(vectorNumericos[i] - media, 2);
+            sumatoria += Math.pow((vectorNumericos[i] - media), 2);
         }
         desviacionEstandar = Math.sqrt(sumatoria / (double)cantidadVector);
         return desviacionEstandar;
     }
     
     //grafica de box plot para numéricos, las 4 funciones sirven para crear el gráfico
-    public ArrayList<Double> crearListaValores(ArrayList<Integer> numericList) {
+    public ArrayList<Double> crearListaValores(ArrayList<Double> numericList) {
         ArrayList<Double> list = new ArrayList<Double>();
         for(int i = 0; i < numericList.size(); i++) {
             list.add(new Double(numericList.get(i)));
@@ -150,7 +182,7 @@ public class UtileriaExtra {
         return list;
     }
 
-    public BoxAndWhiskerXYDataset crearDataset(ArrayList<Integer> numericList) {
+    public BoxAndWhiskerXYDataset crearDataset(ArrayList<Double> numericList) {
         DefaultBoxAndWhiskerXYDataset dataset = new DefaultBoxAndWhiskerXYDataset("Gráfico");
         RegularTimePeriod time = new Day();
         ArrayList<Double> list = crearListaValores(numericList);
@@ -176,7 +208,7 @@ public class UtileriaExtra {
         return chart;
     }
 
-    public ChartFrame crearBoxPlot(String title, String attributeName, ArrayList<Integer> numericList) {
+    public ChartFrame crearBoxPlot(String title, String attributeName, ArrayList<Double> numericList) {
         JFreeChart chart = crearChart(attributeName, crearDataset(numericList));
         ChartFrame frame = new ChartFrame(title, chart);
         return frame;
@@ -253,7 +285,47 @@ public class UtileriaExtra {
         ChartFrame frame = new ChartFrame(title, chart);
         
         return frame;
-    }
-
+    } 
     
+    //para el análisis bivariable de numéricos
+    public double calcularCoeficientePearson(ArrayList<Double> listaA, ArrayList<Double> listaB) {
+        double[] vectorA = llenarArreglo(listaA);
+        double mediaA = redondeoDecimales(calcularMedia(vectorA), 2);
+        double desvestA = calcularDesviacionEstandar(vectorA);
+        
+        double[] vectorB = llenarArreglo(listaB);
+        double mediaB = redondeoDecimales(calcularMedia(vectorB), 2);
+        double desvestB = calcularDesviacionEstandar(vectorB);
+        
+        double sumatoria = 0;
+        for(int i = 0; i < vectorA.length; i++) {
+            sumatoria += ((vectorA[i] - mediaA) * (vectorB[i] - mediaB));
+        }
+        double coeficientePearson = (sumatoria / (vectorA.length * desvestA * desvestB));
+        
+        return coeficientePearson;
+    }
+    
+    public XYDataset cargarDataSet(ArrayList<Double> listaA, ArrayList<Double> listaB) {
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        XYSeries serie = new XYSeries("Distribución");
+        for(int i = 0; i < listaA.size(); i++) {
+            serie.add(listaA.get(i), listaB.get(i));
+        }
+        dataset.addSeries(serie);
+        return dataset;
+    }
+    
+    public ChartFrame getGraficaDispersion(String attributeA, String attributeB, ArrayList<Double> listaA, ArrayList<Double> listaB) {
+        XYDataset dataset = cargarDataSet(listaA, listaB);
+        
+        JFreeChart chart = ChartFactory.createScatterPlot("Dispersión entre " + attributeA + " vs " + attributeB, "A->" + attributeA, "B->" + attributeB, dataset);
+        
+        XYPlot plot = (XYPlot)chart.getPlot();
+        plot.setBackgroundPaint(new Color(255, 228, 196));
+        
+        ChartFrame frame = new ChartFrame("Análisis bivariable", chart);
+        
+        return frame;
+    }
 }
