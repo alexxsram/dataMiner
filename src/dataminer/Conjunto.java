@@ -27,6 +27,7 @@ import code.Attribute;
 import code.MissingValue;
 import code.RowColor;
 import code.UtileriaExtra;
+import javax.swing.table.TableColumnModel;
 
 
 /**
@@ -849,8 +850,6 @@ public class Conjunto extends javax.swing.JFrame {
     public void analisisUnivariable() {
         int indice = cbxAtributoUniv.getSelectedIndex();
         
-        utileria = new UtileriaExtra();
-        
         if(attributeList.get(indice).getTipoDato().equals("numeric")) {
             numericList = utileria.getListaNumerica(instanceList, attributeList, indice);
             
@@ -882,18 +881,16 @@ public class Conjunto extends javax.swing.JFrame {
             frame.setLocationRelativeTo(this);
         }
         else {
-            tblNumericos.removeAll();
+            utileria.limpiarTabla(tblNumericos);
             
             nominalList = utileria.getListaNominal(instanceList, attributeList, indice);
             
             ///si quieres mostrar la grafica de pie, descomentala y comenta la de barras...
-            ///ChartFrame frame = utileria.getGraficaPie("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
-            ChartFrame frame = utileria.getGraficaBarras("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
+            ChartFrame frame = utileria.getGraficaPie("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
+            ///ChartFrame frame = utileria.getGraficaBarras("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
             frame.pack();
             frame.setVisible(true);
             frame.setLocationRelativeTo(this);
-            
-            
         }
     }
     

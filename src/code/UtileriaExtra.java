@@ -6,6 +6,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
@@ -35,6 +38,18 @@ public class UtileriaExtra {
     }
     
     //funciones extras que me servirán de algo :v
+    public void limpiarTabla(JTable tbl) {
+        DefaultTableModel r = (DefaultTableModel)tbl.getModel();
+        while(r.getRowCount() > 0) {
+            r.removeRow(0);
+        }
+        TableColumnModel c = tbl.getColumnModel();
+        while(c.getColumnCount() > 0) {
+            c.removeColumn(c.getColumn(0));
+        }
+    }
+    
+    
     public double redondeoDecimales(double numero, int numeroDecimales) {
         BigDecimal redondeado = new BigDecimal(numero).setScale(numeroDecimales, RoundingMode.HALF_EVEN);
         return redondeado.doubleValue();
