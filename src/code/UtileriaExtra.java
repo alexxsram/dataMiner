@@ -49,7 +49,6 @@ public class UtileriaExtra {
         }
     }
     
-    
     public double redondeoDecimales(double numero, int numeroDecimales) {
         BigDecimal redondeado = new BigDecimal(numero).setScale(numeroDecimales, RoundingMode.HALF_EVEN);
         return redondeado.doubleValue();

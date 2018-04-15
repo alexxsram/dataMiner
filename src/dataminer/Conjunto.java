@@ -105,6 +105,11 @@ public class Conjunto extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         tblNumericos = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        cbxAtributoBiv1 = new javax.swing.JComboBox<>();
+        jLabel8 = new javax.swing.JLabel();
+        cbxAtributoBiv2 = new javax.swing.JComboBox<>();
+        btnAnalisisBivariable = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Datos");
@@ -375,15 +380,46 @@ public class Conjunto extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Análisis Univariable", jPanel3);
 
+        jLabel7.setText("Obtener análisis de:");
+
+        jLabel8.setText("contra:");
+
+        btnAnalisisBivariable.setText("Realizar análisis");
+        btnAnalisisBivariable.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnalisisBivariableActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1300, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbxAtributoBiv1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbxAtributoBiv2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnAnalisisBivariable)
+                .addContainerGap(642, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbxAtributoBiv2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAnalisisBivariable))
+                    .addComponent(cbxAtributoBiv1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel8))
+                .addContainerGap(566, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Análisis Bivariable", jPanel4);
@@ -833,18 +869,16 @@ public class Conjunto extends javax.swing.JFrame {
     
     public void llenarAtributos() {
         cbxAtributoUniv.removeAllItems();
-        
         for(int i = 0; i < attributeList.size(); i++) {
             cbxAtributoUniv.addItem(attributeList.get(i).getNombreAtributo());
         }
         
-        ///para el analisis bivariable creas dos combo box y descomentas estas lineas de abajo.
-        ///cbxAtributoBiv1.removeAllItems();
-        ///cbxAtributoBiv2.removeAllItems();
-        ///for(int i = 0; i < attributeList.size(); i++) {
-        ///    cbxAtributoBiv1.addItem(attributeList.get(i).getNombreAtributo());
-        ///    cbxAtributoBiv2.addItem(attributeList.get(i).getNombreAtributo());
-        ///}
+        cbxAtributoBiv1.removeAllItems();
+        cbxAtributoBiv2.removeAllItems();
+        for(int i = 0; i < attributeList.size(); i++) {
+            cbxAtributoBiv1.addItem(attributeList.get(i).getNombreAtributo());
+            cbxAtributoBiv2.addItem(attributeList.get(i).getNombreAtributo());
+        }
     }
     
     public void analisisUnivariable() {
@@ -891,6 +925,23 @@ public class Conjunto extends javax.swing.JFrame {
             frame.pack();
             frame.setVisible(true);
             frame.setLocationRelativeTo(this);
+        }
+    }
+    
+    public void analisisBivariable() {
+        int indice1 = cbxAtributoBiv1.getSelectedIndex();
+        int indice2 = cbxAtributoBiv2.getSelectedIndex();
+        if(attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("numeric")) {
+            JOptionPane.showMessageDialog(this, "Pearson. i1: " + indice1 + " i2: " + indice2);
+        }
+        else if((attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("nominal")) || (attributeList.get(indice1).getTipoDato().equals("nominal") && attributeList.get(indice2).getTipoDato().equals("numeric"))) {
+            JOptionPane.showMessageDialog(this, "No se puede por ser numerico y nominal. i1: " + indice1 + " i2: " + indice2);
+        }
+        else if((attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("binary")) || (attributeList.get(indice1).getTipoDato().equals("binary") && attributeList.get(indice2).getTipoDato().equals("numeric"))) {
+            JOptionPane.showMessageDialog(this, "No se puede por ser numerico y binario. i1: " + indice1 + " i2: " + indice2);
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Tschuprow. i1: " + indice1 + " i2: " + indice2);
         }
     }
     
@@ -987,6 +1038,7 @@ public class Conjunto extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnAnalisisUnivariableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalisisUnivariableActionPerformed
+        // TODO add your handling code here:
         int conteo = cbxAtributoUniv.getItemCount();
         if(conteo > 0) {
             analisisUnivariable();
@@ -995,6 +1047,18 @@ public class Conjunto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No se puede realizar el análisis.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAnalisisUnivariableActionPerformed
+
+    private void btnAnalisisBivariableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalisisBivariableActionPerformed
+        // TODO add your handling code here:
+        int conteo1 = cbxAtributoBiv1.getItemCount();
+        int conteo2 = cbxAtributoBiv2.getItemCount();
+        if((conteo1 > 0) && (conteo2 > 0)) {
+            analisisBivariable();
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "No se puede realizar el análisis.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAnalisisBivariableActionPerformed
        
     
     /**
@@ -1031,6 +1095,7 @@ public class Conjunto extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarAtributo;
     private javax.swing.JButton btnAgregarInstancia;
+    private javax.swing.JButton btnAnalisisBivariable;
     private javax.swing.JButton btnAnalisisUnivariable;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCargarArchivo;
@@ -1039,6 +1104,8 @@ public class Conjunto extends javax.swing.JFrame {
     private javax.swing.JButton btnGuardarArchivo;
     private javax.swing.JButton btnGuardarComoArchivo;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JComboBox<String> cbxAtributoBiv1;
+    private javax.swing.JComboBox<String> cbxAtributoBiv2;
     private javax.swing.JComboBox<String> cbxAtributoUniv;
     private javax.swing.JComboBox<String> cbxFiltro;
     private javax.swing.JLabel jLabel1;
@@ -1047,6 +1114,8 @@ public class Conjunto extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
