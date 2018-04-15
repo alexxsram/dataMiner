@@ -16,27 +16,18 @@ public class RowColor extends DefaultTableCellRenderer {
         Font fuente = new Font(getFont().getFontName(), Font.BOLD, 12);
         Component cell = super.getTableCellRendererComponent(table, value, selected, focused, row, column);
         if((column != -1) && (row != -1)){
+            
+            String valor = table.getValueAt(row, column).toString();
+            
             if((column == 0) && (row == 0)) { ///si llego a agregar más columnas dejar en el como color a partir de la primer celda de la fila y la columna entera
                 cell.setForeground(Color.BLACK);
                 cell.setFont(getFont());
             }
-            else if(table.getValueAt(row, column).equals("nominal")) {
-                cell.setForeground(Color.DARK_GRAY);
-                cell.setFont(fuente);
-            }
-            else if(table.getValueAt(row, column).equals("numeric")) {
-                cell.setForeground(Color.ORANGE);
-                cell.setFont(fuente);
-            }
-            else if(table.getValueAt(row, column).equals("binary")) {
-                cell.setForeground(Color.MAGENTA);
-                cell.setFont(fuente);
-            }
-            else if(table.getValueAt(row, column).equals("?")) {
+            else if(valor.equals("?")) {
                 cell.setForeground(Color.RED);
                 cell.setFont(fuente);
             }
-            else if(table.getValueAt(row, column).equals("valor invalido")) {
+            else if(valor.equals("no valido")) {
                 cell.setForeground(Color.BLUE);
                 cell.setFont(fuente);
             }

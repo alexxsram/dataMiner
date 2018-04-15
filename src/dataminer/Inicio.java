@@ -26,7 +26,7 @@ public class Inicio extends javax.swing.JFrame {
         acerca_de = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(0, 102, 102));
+        setBackground(new java.awt.Color(204, 255, 0));
 
         btnIniciarMenuConjunto.setText("Iniciar");
         btnIniciarMenuConjunto.addActionListener(new java.awt.event.ActionListener() {
