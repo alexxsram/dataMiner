@@ -1,5 +1,11 @@
 package dataminer;
 
+import code.DataSet;
+import code.Attribute;
+import code.MissingValue;
+import code.RowColor;
+import code.UtileriaExtra;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,14 +24,11 @@ import java.util.regex.Pattern;
 import java.util.Arrays;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 import org.jfree.chart.ChartFrame;
-
-import code.DataSet;
-import code.Attribute;
-import code.MissingValue;
-import code.RowColor;
-import code.UtileriaExtra;
+import org.jfree.chart.JFreeChart;
 
 /**
  *
@@ -43,7 +46,6 @@ public class Conjunto extends javax.swing.JFrame {
     
     ArrayList<ArrayList<String>> newInstanceList; //nueva lista de instancias para graficar
     ArrayList<String> nominalList; //
-    ArrayList<Integer> intList;
     ArrayList<Double> numericList; //
     
     boolean abierto; //usada para definir que se abrió el dataset
@@ -116,6 +118,8 @@ public class Conjunto extends javax.swing.JFrame {
         setTitle("Datos");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
+        jPanel2.setBackground(new java.awt.Color(0, 153, 102));
+
         jLabel1.setText("Nombre:");
 
         jLabel2.setText("Núm. atributos:");
@@ -186,7 +190,7 @@ public class Conjunto extends javax.swing.JFrame {
 
         jLabel5.setText("Buscar dato por:");
 
-        btnBuscar.setText("Buscar");
+        btnBuscar.setText("Buscar y reemplazar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBuscarActionPerformed(evt);
@@ -231,28 +235,27 @@ public class Conjunto extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblNombreConjunto))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblNumeroAtributos))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblNumeroInstancias))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnAgregarAtributo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEliminarAtributos)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEliminarAtributos))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNombreConjunto))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNumeroAtributos))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNumeroInstancias)))))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblPorcentajeFaltantes)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 519, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCargarArchivo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnGuardarArchivo)
@@ -261,8 +264,9 @@ public class Conjunto extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSalir))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1020, Short.MAX_VALUE)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -270,13 +274,19 @@ public class Conjunto extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEliminarInstancias))
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnBuscar)))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane3))))
+                                        .addGap(8, 8, 8)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(jLabel5)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnBuscar))
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(jLabel4)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblPorcentajeFaltantes)))))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -292,23 +302,24 @@ public class Conjunto extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(lblNombreConjunto)
+                            .addComponent(lblNombreConjunto))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(lblNumeroAtributos))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(lblNumeroInstancias)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
                             .addComponent(lblPorcentajeFaltantes))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(lblNumeroAtributos))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel3)
-                                    .addComponent(lblNumeroInstancias)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnBuscar)
-                                .addComponent(jLabel5)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBuscar)
+                            .addComponent(jLabel5))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -328,6 +339,8 @@ public class Conjunto extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("Conjunto de datos", jPanel2);
+
+        jPanel3.setBackground(new java.awt.Color(0, 153, 102));
 
         jLabel6.setText("Obtener análisis de:");
 
@@ -380,6 +393,8 @@ public class Conjunto extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("Análisis Univariable", jPanel3);
+
+        jPanel4.setBackground(new java.awt.Color(0, 153, 102));
 
         jLabel7.setText("Obtener análisis de:");
 
@@ -503,7 +518,7 @@ public class Conjunto extends javax.swing.JFrame {
                         attributeList.add(attribute);
                     }
                     else if(auxLectura.startsWith("@missingValue")) {
-                        valorFaltante = auxLectura.substring(13, 15);
+                        valorFaltante = auxLectura.substring(14, 15);
                         missingvalue.setValorFaltante(valorFaltante);
                     }
                     else if(auxLectura.startsWith("@data")) {
@@ -597,6 +612,7 @@ public class Conjunto extends javax.swing.JFrame {
                     }
                 }
                 escritor.close();
+                JOptionPane.showMessageDialog(this, "El archivo guardado exitosamente en la ruta\n" + directorio.getSelectedFile().getAbsolutePath());
             } catch(FileNotFoundException ex) {
                 Logger.getLogger(Conjunto.class.getName()).log(Level.SEVERE, null, ex);
             } catch(IOException ex) {
@@ -672,7 +688,7 @@ public class Conjunto extends javax.swing.JFrame {
                     valorFaltante++;
                 }
                 else {
-                    filaInstancia[k + 1] = "no valido";
+                    filaInstancia[k + 1] = instanceList.get(j).get(k);
                 }
             }
             dtmInstancias.addRow(filaInstancia);
@@ -697,9 +713,10 @@ public class Conjunto extends javax.swing.JFrame {
         if(porcentajeFaltante > 100.0) {
             porcentajeFaltante = 100.0;    
         }
-        lblPorcentajeFaltantes.setText(utileria.redondeoDecimales(porcentajeFaltante, 2) + "%");
+        lblPorcentajeFaltantes.setText(utileria.redondeoDecimales(porcentajeFaltante, 4) + "%");
         tblInstancias.setModel(dtmInstancias);
         RowColor rowcolor = new RowColor();
+        rowcolor.pasarLista(attributeList);
         tblInstancias.setDefaultRenderer(Object.class, rowcolor);
         
         obtenerPorcentajeErrores();
@@ -714,7 +731,7 @@ public class Conjunto extends javax.swing.JFrame {
                 Arrays.sort(filas);
                 for(int i = filas.length - 1; i >= 0; i--) {
                     attributeList.remove(filas[i]);
-                    for(int j = 0; j < instanceList.size(); j++) {
+                    for(int j = instanceList.size() - 1; j >= 0; j--) {
                         instanceList.get(j).remove(filas[i]);                        
                     }
                 }
@@ -728,13 +745,39 @@ public class Conjunto extends javax.swing.JFrame {
     }   
     
     public void agregarAtributo() {
-        String nombreAtributo = "ex-number", tipoDato = "numeric", expresionRegular = "[0-9]+", valor = "?";
-        attribute = new Attribute(nombreAtributo, tipoDato, expresionRegular);
-        attributeList.add(attribute);
-        for(int i = 0; i < instanceList.size(); i++) {
-            instanceList.get(i).add(valor);
-        }        
-        mostrarDatos();
+        JTextField nombreAtributo = new JTextField();
+        JComboBox tipoDato = new JComboBox();
+        tipoDato.addItem("numeric");
+        tipoDato.addItem("nominal");
+        tipoDato.addItem("binary");
+        tipoDato.addItem("categorical");
+        JTextField expresionRegular = new JTextField();
+        JTextField valor = new JTextField();
+        Object[] formulario = {
+            "Nombre de atributo:", nombreAtributo,
+            "Tipo de dato:", tipoDato,
+            "Expresión regular:", expresionRegular,
+            "Valor:", valor
+        };
+        
+        int opcion = JOptionPane.showConfirmDialog(this, formulario, "Nuevo atributo", JOptionPane.OK_CANCEL_OPTION);
+        if(opcion == JOptionPane.OK_OPTION) {
+            String na = nombreAtributo.getText();
+            String td = tipoDato.getSelectedItem().toString();
+            String er = expresionRegular.getText();
+            String val = valor.getText();
+            if(!na.equals("") && !er.equals("") && !val.equals("")) {
+                attribute = new Attribute(na, td, er);
+                attributeList.add(attribute);
+                for(int i = 0; i < instanceList.size(); i++) {
+                    instanceList.get(i).add(val);
+                }        
+                mostrarDatos();
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Valores vacíos, no se puede dejar un valor vacío.", "¡Error!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
     public void borrarInstancias() { 
@@ -783,14 +826,12 @@ public class Conjunto extends javax.swing.JFrame {
         }
     }
     
-    public void buscarDato() {
+    public void buscarReemplazarDato() {
+        boolean reemplazar = false;
         int index = cbxFiltro.getSelectedIndex();
-        String filtro = JOptionPane.showInputDialog(null, "Ingresa el dato de [" + attributeList.get(index).getNombreAtributo()+ "] que desea buscar: ");
+        String filtro = JOptionPane.showInputDialog(null, "Ingresa el dato que desea buscar de [" + attributeList.get(index).getNombreAtributo()+ "]: ", "Buscar", JOptionPane.INFORMATION_MESSAGE);
         if(index != -1) {
             if(filtro == null) {
-                mostrarDatos();
-            }
-            else if(filtro.length() == 0) {
                 mostrarDatos();
             }
             else {
@@ -803,7 +844,7 @@ public class Conjunto extends javax.swing.JFrame {
                 Object[] filaInstancia = new Object[dataList.size() + 1];
                 for(int j = 0; j < instanceList.size(); j++) {
                     String minusculas = instanceList.get(j).get(index).toLowerCase(), mayusculas = instanceList.get(j).get(index).toUpperCase(), cadenaOriginal = instanceList.get(j).get(index);
-                    if((minusculas.equals(filtro)) || (mayusculas.equals(filtro)) || (cadenaOriginal.equals(filtro))) {
+                    if((minusculas.startsWith(filtro)) || (mayusculas.startsWith(filtro)) || (cadenaOriginal.startsWith(filtro))) {
                         filaInstancia[0] = j + 1;
                         for(int k = 0; k < dataList.size(); k++) {
                             if(Pattern.matches(attributeList.get(k).getExpresionRegular(), instanceList.get(j).get(k))) {
@@ -813,10 +854,11 @@ public class Conjunto extends javax.swing.JFrame {
                                 filaInstancia[k + 1] = instanceList.get(j).get(k);
                             }
                             else if(!Pattern.matches(attributeList.get(k).getExpresionRegular(), instanceList.get(j).get(k))){
-                                filaInstancia[k + 1] = "valor invalido";
+                                filaInstancia[k + 1] = instanceList.get(j).get(k);
                             }
                         }
                         dtmInstancias.addRow(filaInstancia);
+                        reemplazar = true;
                     }
                 }
                 dtmInstancias.addTableModelListener(new TableModelListener() {
@@ -840,7 +882,23 @@ public class Conjunto extends javax.swing.JFrame {
                 });
                 tblInstancias.setModel(dtmInstancias);
                 RowColor rowcolor = new RowColor();
+                rowcolor.pasarLista(attributeList);
                 tblInstancias.setDefaultRenderer(Object.class, rowcolor);
+                
+                if(reemplazar == true) {
+                    String reemplazo = JOptionPane.showInputDialog(null, "Nuevo valor para los resultados encontrados en [" + attributeList.get(index).getNombreAtributo()+ "]: ", "Reemplazar", JOptionPane.INFORMATION_MESSAGE);
+                    if(reemplazo == null) {
+                        
+                    }
+                    else {
+                        int row;
+                        for(int i = 0; i < tblInstancias.getRowCount(); i++) {
+                            row = Integer.parseInt(tblInstancias.getValueAt(i, 0).toString()) - 1;
+                            instanceList.get(row).set(index, reemplazo);
+                        }
+                        mostrarDatos();
+                    }
+                }
             }
         }
     }
@@ -871,8 +929,8 @@ public class Conjunto extends javax.swing.JFrame {
             if(porcentajeFaltante > 100.0) {
                 porcentajeFaltante = 100.0;
             }
-            filaError[1] = utileria.redondeoDecimales(porcentajeError, 2);
-            filaError[2] = utileria.redondeoDecimales(porcentajeFaltante, 2);
+            filaError[1] = utileria.redondeoDecimales(porcentajeError, 4);
+            filaError[2] = utileria.redondeoDecimales(porcentajeFaltante, 4);
             dtmErrores.addRow(filaError);
             if((valorError > 0) || (valorFalta > 0)) {
                 valorError = 0;
@@ -900,11 +958,11 @@ public class Conjunto extends javax.swing.JFrame {
     
     public void analisisUnivariable() {
         int indice = cbxAtributoUniv.getSelectedIndex();
-        
-        if(attributeList.get(indice).getTipoDato().equals("numeric")) {
-            numericList = utileria.getListaNumerica(instanceList, attributeList, indice);
+        String attribute = attributeList.get(indice).getTipoDato();
+        if(attribute.equals("numeric")) {
+            numericList = utileria.getListaNumericaUni(instanceList, attributeList, indice);
             
-            double[] vector = utileria.llenarArreglo(numericList);
+            double[] vector = utileria.llenarDoubleArray(numericList);
             
             dtmUnivariable = new DefaultTableModel();
             dtmUnivariable.addColumn("Concepto");
@@ -926,7 +984,7 @@ public class Conjunto extends javax.swing.JFrame {
             
             tblUnivariable.setModel(dtmUnivariable);
             
-            ChartFrame frame = utileria.crearBoxPlot("Análisis numérico", attributeList.get(indice).getNombreAtributo(), numericList);
+            ChartFrame frame = utileria.getBoxPlot("Análisis numérico", attribute, numericList);
             frame.pack();
             frame.setVisible(true);
             frame.setLocationRelativeTo(this);
@@ -934,11 +992,9 @@ public class Conjunto extends javax.swing.JFrame {
         else {
             utileria.limpiarTabla(tblUnivariable);
             
-            nominalList = utileria.getListaNominal(instanceList, attributeList, indice);
+            nominalList = utileria.getListaNominalUni(instanceList, attributeList, indice);
             
-            ///si quieres mostrar la grafica de pie, descomentala y comenta la de barras...
-            ChartFrame frame = utileria.getGraficaPie("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
-            ///ChartFrame frame = utileria.getGraficaBarras("Análisis categórico", attributeList.get(indice).getNombreAtributo(), nominalList);
+            ChartFrame frame = utileria.getGraficaPie("Análisis categórico", attribute, nominalList);
             frame.pack();
             frame.setVisible(true);
             frame.setLocationRelativeTo(this);
@@ -948,19 +1004,22 @@ public class Conjunto extends javax.swing.JFrame {
     public void analisisBivariable() {
         int indice1 = cbxAtributoBiv1.getSelectedIndex();
         int indice2 = cbxAtributoBiv2.getSelectedIndex();
-        if(attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("numeric")) {
+        
+        String attributeA = attributeList.get(indice1).getTipoDato();
+        String attributeB = attributeList.get(indice2).getTipoDato();
+        
+        if(attributeA.equals("numeric") && attributeB.equals("numeric")) {
+            ArrayList<Double> listaA = utileria.getListaNumericaUni(instanceList, attributeList, indice1);
+            double[] vectorA = utileria.llenarDoubleArray(listaA);
+            double mediaA = utileria.redondeoDecimales(utileria.calcularMedia(vectorA), 4);
+            double desvestA = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorA), 4);
             
-            ArrayList<Double> listaA = utileria.getListaNumerica(instanceList, attributeList, indice1);
-            double[] vectorA = utileria.llenarArreglo(listaA);
-            double mediaA = utileria.redondeoDecimales(utileria.calcularMedia(vectorA), 2);
-            double desvestA = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorA), 3);
+            ArrayList<Double> listaB = utileria.getListaNumericaUni(instanceList, attributeList, indice2);
+            double[] vectorB = utileria.llenarDoubleArray(listaB);
+            double mediaB = utileria.redondeoDecimales(utileria.calcularMedia(vectorB), 4);
+            double desvestB = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorB), 4);
             
-            ArrayList<Double> listaB = utileria.getListaNumerica(instanceList, attributeList, indice2);
-            double[] vectorB = utileria.llenarArreglo(listaB);
-            double mediaB = utileria.redondeoDecimales(utileria.calcularMedia(vectorB), 2);
-            double desvestB = utileria.redondeoDecimales(utileria.calcularDesviacionEstandar(vectorB), 3);
-            
-            double coeficientePearson = utileria.redondeoDecimales(utileria.calcularCoeficientePearson(listaA, listaB), 2);
+            double coeficientePearson = utileria.redondeoDecimales(utileria.calcularCoeficientePearson(listaA, listaB), 4);
             
             Object[] fila = new Object[2];
             dtmBivariable = new DefaultTableModel();
@@ -994,19 +1053,60 @@ public class Conjunto extends javax.swing.JFrame {
             frame.setVisible(true);
             frame.setLocationRelativeTo(this);
         }
-        else if((attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("nominal")) || (attributeList.get(indice1).getTipoDato().equals("nominal") && attributeList.get(indice2).getTipoDato().equals("numeric"))) {
-            JOptionPane.showMessageDialog(this, "No se puede por ser numerico y nominal. i1: " + indice1 + " i2: " + indice2);
+        else if((attributeA.equals("numeric") && attributeB.equals("nominal")) || (attributeA.equals("nominal") && attributeB.equals("numeric"))) {
+            JOptionPane.showMessageDialog(this, "No se puede realizar el análisis, es un atributo numérico con nominal.", "¡Error!", JOptionPane.ERROR_MESSAGE);
         }
-        else if((attributeList.get(indice1).getTipoDato().equals("numeric") && attributeList.get(indice2).getTipoDato().equals("binary")) || (attributeList.get(indice1).getTipoDato().equals("binary") && attributeList.get(indice2).getTipoDato().equals("numeric"))) {
-            JOptionPane.showMessageDialog(this, "No se puede por ser numerico y binario. i1: " + indice1 + " i2: " + indice2);
+        else if((attributeA.equals("numeric") && attributeB.equals("binary")) || (attributeA.equals("binary") && attributeB.equals("numeric"))) {
+            JOptionPane.showMessageDialog(this, "No se puede realizar el análisis, es un atributo binario con nominal.", "¡Error!", JOptionPane.ERROR_MESSAGE);
         }
-        else {
-            JOptionPane.showMessageDialog(this, "Tschuprow. i1: " + indice1 + " i2: " + indice2);
+        else if((attributeA.equals("numeric") && attributeB.equals("categorical")) || (attributeA.equals("categorical") && attributeB.equals("numeric"))) {
+            JOptionPane.showMessageDialog(this, "No se puede realizar el análisis, es un atributo categorico con nominal.", "¡Error!", JOptionPane.ERROR_MESSAGE);
+        }
+        else {            
+            newInstanceList = utileria.getListaNominalBiv(instanceList, attributeList, indice1, indice2);
+            
+            ArrayList<String> instanceAttributeListA = utileria.getListaInstanciaAtributo(newInstanceList, 0);
+            ArrayList<String> valuesOfA = utileria.valoresUnicos(instanceAttributeListA);
+            
+            ArrayList<String> instanceAttributeListB = utileria.getListaInstanciaAtributo(newInstanceList, 1);
+            ArrayList<String> valuesOfB = utileria.valoresUnicos(instanceAttributeListB);
+            
+            int[][] frequenceMatrix = utileria.getMatrizFrecuencias(instanceAttributeListA, instanceAttributeListB, valuesOfA, valuesOfB);
+            
+            double chiCuadrada = utileria.redondeoDecimales(utileria.calcularChiCuadrada(frequenceMatrix, newInstanceList.size()), 4);
+            
+            double coeficienteTschuprow = utileria.redondeoDecimales(utileria.calcularCoeficienteTschuprow(chiCuadrada, newInstanceList.size(), valuesOfA.size(), valuesOfB.size()), 4);
+            
+            Object[] fila = new Object[2];
+            dtmBivariable = new DefaultTableModel();
+            dtmBivariable.addColumn("Concepto");
+            dtmBivariable.addColumn("Resultado");
+            
+            fila[0] = "Chi cuadrada";
+            fila[1] = chiCuadrada;
+            dtmBivariable.addRow(fila);
+            
+            fila[0] = "Coeficiente de Tschuprow";
+            fila[1] = coeficienteTschuprow;
+            dtmBivariable.addRow(fila);
+            
+            tblBivariable.setModel(dtmBivariable);
+            
+            JFreeChart chart = utileria.getGraficaApilada(attributeList.get(indice1).getNombreAtributo(), attributeList.get(indice2).getNombreAtributo(), frequenceMatrix, valuesOfA, valuesOfB);
+            ChartFrame frame = new ChartFrame("Análisis bivariable", chart);
+            frame.pack();
+            frame.setVisible(true);
+            frame.setLocationRelativeTo(this);
         }
     }
     
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
-        cargarArchivo();
+        //if(abierto == false) {
+            cargarArchivo();
+        //}
+        //else {
+        //    JOptionPane.showMessageDialog(this, "Archivo ya abierto, no puedes cargar otro dataset.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
+        //}
     }//GEN-LAST:event_btnCargarArchivoActionPerformed
 
     private void btnGuardarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarArchivoActionPerformed
@@ -1090,7 +1190,7 @@ public class Conjunto extends javax.swing.JFrame {
         // TODO add your handling code here:
         int conteo = cbxFiltro.getItemCount();
         if(conteo > 0) {
-            buscarDato();
+            buscarReemplazarDato();
         }
         else {
             JOptionPane.showMessageDialog(this, "No hay filtro de búsqueda.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
@@ -1119,8 +1219,7 @@ public class Conjunto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No se puede realizar el análisis.\nSe debe cargar un DataSet.", "¡Aviso!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAnalisisBivariableActionPerformed
-       
-    
+
     /**
      * @param args the command line arguments
      */
